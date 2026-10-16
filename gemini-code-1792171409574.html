@@ -1,0 +1,3034 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title">Roblox 🎮</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+        
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #ffffff; display: flex; align-items: center; justify-content: center; position: fixed; }
+
+        #app-window-frame {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color, #0f1115); overflow: hidden; display: flex; flex-direction: column; transition: background-color 0.4s;
+        }
+
+        .roblox-logo-wrapper { display: inline-flex; align-items: center; white-space: nowrap; }
+        .roblox-exact-logo {
+            font-family: Impact, Arial Black, sans-serif; font-weight: 900; font-size: 26px;
+            letter-spacing: -0.5px; display: inline-flex; align-items: center; line-height: 1;
+            color: var(--logo-color, #ffffff); transition: color 0.3s ease;
+        }
+
+        @media (max-width: 480px) {
+            .roblox-exact-logo { font-size: 20px; }
+        }
+
+        #enjoy-halloween-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px);
+            z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        #enjoy-halloween-modal.show { opacity: 1; }
+        .halloween-modal-card {
+            background: var(--card-bg, #1f232a); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px;
+            width: 100%; max-width: 440px; padding: 30px 24px; display: flex; flex-direction: column; align-items: center;
+            text-align: center; position: relative; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); transform: scale(0.9); transition: transform 0.3s;
+        }
+        #enjoy-halloween-modal.show .halloween-modal-card { transform: scale(1); }
+        .halloween-modal-close {
+            position: absolute; top: 16px; right: 16px; background: none; border: none; color: #aaa;
+            font-size: 20px; cursor: pointer; width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+        }
+        .halloween-modal-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .halloween-modal-logo { margin-bottom: 16px; }
+        .halloween-modal-title { font-size: 22px; font-weight: 900; color: #ffffff; margin-bottom: 6px; }
+        .halloween-modal-desc { font-size: 14px; color: #aaa; margin-bottom: 24px; line-height: 1.4; }
+        .halloween-modal-btn {
+            width: 100%; background: var(--accent-color, #0070f3); color: #ffffff; border: none;
+            border-radius: 12px; padding: 14px; font-size: 15px; font-weight: bold; cursor: pointer;
+            transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 15px rgba(0, 112, 243, 0.4);
+        }
+
+        #halloween-bg-fx {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 150; overflow: hidden; display: none;
+        }
+        .halloween-glow {
+            position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 300px; background: radial-gradient(circle, rgba(255, 123, 0, 0.25) 0%, rgba(11, 9, 15, 0) 70%);
+            border-radius: 50%; animation: pulseGlow 4s infinite alternate ease-in-out;
+        }
+        @keyframes pulseGlow { 0% { transform: translateX(-50%) scale(0.9); opacity: 0.6; } 100% { transform: translateX(-50%) scale(1.3); opacity: 1; } }
+        
+        .bat {
+            position: absolute; background: #ff7b00;
+            clip-path: polygon(50% 0%, 65% 30%, 100% 20%, 75% 50%, 100% 80%, 65% 70%, 50% 100%, 35% 70%, 0% 80%, 25% 50%, 0% 20%, 35% 30%);
+            animation: flyBat linear infinite; opacity: 0.7;
+        }
+        @keyframes flyBat {
+            0% { transform: translate(-50px, 110vh) scale(0.5) rotate(-10deg); }
+            50% { transform: translate(50vw, 40vh) scale(0.8) rotate(15deg); }
+            100% { transform: translate(calc(100vw + 50px), -50px) scale(0.4) rotate(-5deg); }
+        }
+
+        .menu-halloween-spider-wrap {
+            position: absolute; top: 0; right: 0; width: 190px; height: 190px;
+            pointer-events: none; z-index: 250; display: none;
+        }
+        .spider-web-corner { position: absolute; top: 0; right: 0; width: 190px; height: 190px; pointer-events: none; opacity: 0.95; }
+        .hanging-spider-container {
+            position: absolute; top: 0; right: 95px; display: flex; flex-direction: column;
+            align-items: center; animation: spiderSwing 3s infinite ease-in-out alternate; transform-origin: top center;
+        }
+        .spider-thread { width: 1.5px; height: 120px; background: rgba(255, 255, 255, 0.6); }
+        .spider-body-svg { width: 46px; height: 46px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.9)); }
+        @keyframes spiderSwing { 0% { transform: rotate(-7deg) translateY(0px); } 100% { transform: rotate(7deg) translateY(14px); } }
+
+        #error-277-overlay, #global-warning-overlay, #global-ban-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 7000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .error-277-card { background: var(--card-bg, #1f232a); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; width: 100%; max-width: 380px; padding: 26px; display: flex; flex-direction: column; gap: 16px; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8); }
+        .error-277-title { font-size: 20px; font-weight: 900; color: #ff5252; }
+        .error-277-desc { font-size: 13px; color: #ccc; line-height: 1.5; }
+        .error-277-btn { background: var(--accent-color, #0070f3); color: #ffffff; border: none; border-radius: 10px; padding: 12px; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+        /* АДМИН ПАНЕЛЬ */
+        #admin-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 9, 15, 0.95); backdrop-filter: blur(10px); z-index: 4000; display: none; flex-direction: column; padding: 20px; color: #fff; overflow-y: auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 16px; font-size: 18px; font-weight: bold; color: #ff9500; }
+        .admin-close-btn { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+        .admin-section { background: rgba(25, 20, 33, 0.8); border: 1px solid rgba(255,123,0,0.3); border-radius: 12px; padding: 16px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .admin-section-title { font-size: 14px; font-weight: bold; color: #ffb74d; }
+        .admin-input { background: #121017; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; }
+        .admin-select { background: #121017; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; cursor: pointer; }
+        .admin-btn { background: #ff7b00; color: #fff; border: none; border-radius: 8px; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .admin-btn:hover { background: #ff9500; }
+        .admin-btn-danger { background: #e11d48; }
+        .admin-btn-danger:hover { background: #f43f5e; }
+        .admin-list-box { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; margin-top: 6px; }
+        .admin-item-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px; font-size: 12px; }
+        .admin-remove-btn { background: #e11d48; color: #fff; border: none; border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; }
+
+        #roblox-esc-menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(18, 20, 24, 0.92); backdrop-filter: blur(10px); z-index: 500; display: none; flex-direction: column; justify-content: flex-start; padding: 15px 12px; color: #ffffff; overflow-y: auto; }
+        .esc-top-header { display: flex; justify-content: center; width: 100%; margin-bottom: 12px; flex-shrink: 0; }
+        .esc-nav-tabs { display: flex; background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 3px; gap: 3px; max-width: 100%; }
+        .esc-tab-btn { padding: 6px 12px; background: transparent; border: none; color: #94a3b8; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 8px; }
+        .esc-tab-btn.active { background: rgba(255, 255, 255, 0.18); color: #ffffff; }
+        .esc-main-panel { width: 100%; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+        .esc-section-heading { font-size: 14px; font-weight: bold; color: #e2e8f0; margin-bottom: 4px; }
+        .esc-content-box { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px; min-height: 120px; max-height: 180px; overflow-y: auto; }
+        .esc-player-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 8px; margin-bottom: 4px; }
+        .esc-player-info { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; }
+        .esc-join-friend-btn { background: #2563eb; color: white; border: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .esc-bottom-controls { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 15px 0 10px 0; flex-shrink: 0; }
+        .esc-action-btn { border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; color: white; }
+        .esc-btn-leave, .esc-btn-respawn { background: #334155; }
+        .esc-btn-resume { background: #2563eb; }
+
+        #respawn-confirm-frame, #leave-confirm-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(10px); z-index: 600; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .respawn-confirm-card { background: var(--card-bg, #1f232a); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; width: 100%; max-width: 420px; padding: 22px; display: flex; flex-direction: column; gap: 16px; text-align: center; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); }
+        .respawn-confirm-title { font-size: 16px; font-weight: bold; color: #ffffff; }
+        .respawn-confirm-btns { display: flex; gap: 10px; }
+        .respawn-btn-yes { flex: 1; background: var(--accent-color, #0070f3); color: white; border: none; border-radius: 10px; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; }
+        .respawn-btn-no { flex: 1; background: rgba(255, 255, 255, 0.12); color: white; border: none; border-radius: 10px; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; }
+
+        #loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0f1115; z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .loading-logo { display: flex; justify-content: center; }
+        .loading-bar-container { width: 260px; height: 8px; background: #12151a; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.15); }
+        .loading-bar-fill { width: 0%; height: 100%; background: var(--accent-color, #0070f3); transition: width 0.1s linear; }
+        .loading-tip { font-size: 13px; color: #aaa; margin-top: 10px; }
+
+        .roblox-verified-badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; background-color: #0070f3; border-radius: 4px; vertical-align: middle; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .roblox-verified-badge svg { width: 11px; height: 11px; fill: none; stroke: white; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+        .roblox-avatar-head-icon {
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            position: relative; background: radial-gradient(circle at 50% 40%, #2f3542 0%, #15181e 100%);
+            border-radius: 50%; overflow: hidden;
+        }
+        .roblox-avatar-head-icon svg { width: 85%; height: 85%; }
+
+        #profile-modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #12151a; z-index: 6000; display: none; flex-direction: column; overflow-y: auto; color: #ffffff; }
+        .profile-top-bar { padding: 16px; display: flex; align-items: center; position: absolute; top: 0; left: 0; width: 100%; z-index: 10; background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent); }
+        .profile-close-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; }
+        .profile-3d-hero { width: 100%; height: 260px; background: linear-gradient(to bottom, #1f293d, #111622); position: relative; overflow: hidden; }
+        #profile-3d-canvas { width: 100%; height: 100%; display: block; }
+        .profile-info-section { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 14px; margin-top: -35px; position: relative; z-index: 5; }
+        .profile-user-row { display: flex; align-items: center; gap: 14px; }
+        
+        .profile-avatar-circle-wrap { position: relative; width: 84px; height: 84px; flex-shrink: 0; }
+        .profile-avatar-circle { width: 84px; height: 84px; border-radius: 50%; background: #1f232a; border: 3px solid #383d48; box-shadow: 0 4px 12px rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .profile-online-badge {
+            position: absolute; bottom: 3px; right: 3px; width: 18px; height: 18px;
+            background: #20bf6b; border: 3px solid #12151a; border-radius: 50%; z-index: 10;
+        }
+
+        .profile-names-column { display: flex; flex-direction: column; }
+        .profile-display-name { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.3px; display: flex; align-items: center; }
+        .profile-handle-name { font-size: 14px; color: #aaa; font-weight: 500; margin-top: 2px; }
+
+        .profile-stats-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+        .profile-stat-badge { background: var(--card-bg, #1f232a); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px 14px; font-size: 12px; font-weight: bold; color: #ddd; white-space: nowrap; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.2s; }
+        .profile-stat-badge:hover { background: rgba(255,255,255,0.1); }
+
+        .profile-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
+        .profile-actions-row { display: flex; gap: 10px; }
+        .profile-main-btn { flex: 1; background: var(--accent-color, #0070f3); color: white; border: none; border-radius: 10px; padding: 12px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
+        .profile-secondary-btn { background: #334155; color: white; border: none; border-radius: 10px; padding: 12px 16px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; display: flex; align-items: center; gap: 6px; position: relative; }
+        
+        /* Индикатор красной точки для ЛС */
+        .dm-unread-dot {
+            position: absolute; top: -4px; right: -4px; width: 12px; height: 12px;
+            background: #ef4444; border: 2px solid #1f232a; border-radius: 50%; display: none;
+        }
+
+        .profile-bio-box { font-size: 14px; color: #ccc; line-height: 1.5; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .profile-more-btn { color: #3b82f6; font-weight: bold; cursor: pointer; margin-left: 4px; display: inline; }
+        .profile-edit-input { width: 100%; background: #121017; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px; color: #fff; font-size: 13px; outline: none; margin-top: 6px; }
+
+        .profile-section-heading { font-size: 16px; font-weight: bold; color: #fff; margin-top: 6px; }
+        .currently-wearing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .wearing-item-card { background: var(--card-bg, #1f232a); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+        .wearing-item-icon { width: 50px; height: 50px; background: #12151a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .wearing-item-title { font-size: 11px; font-weight: bold; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+        .wearing-item-price { font-size: 11px; color: var(--accent-text, #3b82f6); font-weight: bold; display: flex; align-items: center; gap: 3px; }
+
+        #social-list-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0f1115; z-index: 5500; display: none; flex-direction: column; }
+        .social-top-bar { padding: 14px 16px; background: rgba(15,17,21,0.95); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 16px; }
+        .social-back-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .social-list-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+        #private-dm-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0f1115; z-index: 5000; display: none; flex-direction: column; color: #fff; }
+        .dm-top-bar { padding: 14px 16px; background: rgba(15,17,21,0.95); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 12px; }
+        .dm-back-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .dm-header-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 16px; }
+        .dm-messages-box { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .dm-bubble { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.4; word-break: break-all; }
+        .dm-bubble.incoming { background: #1f232a; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .dm-bubble.outgoing { background: var(--accent-color, #0070f3); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .dm-input-row { padding: 12px 16px; background: #12151a; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 10px; }
+        .dm-input-field { flex: 1; background: #1f232a; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 14px; color: white; font-size: 14px; outline: none; }
+        .dm-send-btn { background: var(--accent-color, #0070f3); color: white; border: none; border-radius: 10px; padding: 0 20px; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+        #friends-screen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color, #0f1115); z-index: 500; display: none; flex-direction: column; overflow: hidden; }
+        .friends-top-header { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(15,17,21,0.95); }
+        .friends-search-row { display: flex; align-items: center; gap: 12px; }
+        .friends-back-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .friends-search-input-wrap { flex: 1; background: #1a1f29; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; }
+        .friends-search-input { background: none; border: none; color: white; font-size: 14px; width: 100%; outline: none; }
+        
+        .friends-tabs-row { display: flex; gap: 24px; font-size: 15px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 4px; }
+        .friends-tab-item { padding-bottom: 8px; color: #888; cursor: pointer; position: relative; }
+        .friends-tab-item.active { color: #fff; }
+        .friends-tab-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--accent-color, #0070f3); border-radius: 3px; }
+
+        .friends-filters-row { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; }
+        .friend-filter-chip { background: var(--card-bg, #1f232a); border: 1px solid rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; color: #aaa; cursor: pointer; white-space: nowrap; }
+        .friend-filter-chip.active { background: #fff; color: #000; border-color: #fff; }
+
+        .friends-list-container { flex: 1; overflow-y: auto; padding: 0 16px 80px 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .friend-row-card { background: var(--card-bg, #1f232a); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+        .friend-row-card:hover { background: rgba(255,255,255,0.04); }
+        .friend-row-left { display: flex; align-items: center; gap: 12px; }
+        .friend-avatar-wrap { position: relative; width: 48px; height: 48px; }
+        .friend-avatar-circle { width: 48px; height: 48px; border-radius: 50%; background: #1f232a; border: 2px solid #383d48; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .friend-status-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: #20bf6b; border-radius: 50%; border: 2px solid #1f232a; }
+        .friend-status-dot.offline { background: #64748b; }
+        .friend-info-col { display: flex; flex-direction: column; gap: 2px; }
+        .friend-display-title { font-size: 14px; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .friend-handle-sub { font-size: 12px; color: #aaa; }
+        .friend-activity-sub { font-size: 11px; color: #64748b; }
+        .friend-view-profile-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .friend-view-profile-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .menu-page { display: none; flex-direction: column; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 70px; position: relative; z-index: 2; }
+        .menu-page.active { display: flex; }
+        #menu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color, #0f1115); z-index: 200; display: none; flex-direction: column; overflow: hidden; }
+
+        .menu-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(5px); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(255, 255, 255, 0.08); gap: 8px; flex-wrap: wrap; }
+        .menu-logo-area { display: flex; align-items: center; cursor: pointer; }
+        .menu-top-icons { display: flex; align-items: center; gap: 6px; }
+        .robux-counter-pill { background: var(--card-bg, #1f232a); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; padding: 5px 10px; display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 12px; color: var(--accent-text, #3b82f6); }
+        .robux-counter-pill svg { width: 13px; height: 13px; fill: var(--accent-text, #3b82f6); }
+        
+        .top-icon-btn { width: 34px; height: 34px; background: var(--card-bg, #1f232a); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; overflow: hidden; }
+        .top-icon-btn svg { width: 18px; height: 18px; fill: #ffffff; }
+
+        .user-profile-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; cursor: pointer; }
+        .user-left-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar-circle { width: 48px; height: 48px; background: #1f232a; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #383d48; overflow: hidden; }
+        .user-name { font-size: 18px; font-weight: bold; color: #fff; display: flex; align-items: center; }
+        .section-title { font-size: 18px; font-weight: bold; padding: 16px 16px 10px 16px; color: var(--accent-text, #3b82f6); }
+
+        .games-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 0 16px; }
+        .game-card { background: var(--card-bg, #1f232a); border-radius: 12px; overflow: hidden; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+        .game-thumbnail { width: 100%; height: 130px; background: linear-gradient(135deg, #1e293b, #0f172a); display: flex; align-items: center; justify-content: center; }
+        .game-info { padding: 12px; }
+        .game-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: #ffffff; }
+        .game-rating { font-size: 11px; color: #aaa; }
+
+        #game-details-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0f1115; z-index: 250; display: none; flex-direction: column; overflow-y: auto; padding-bottom: 90px; }
+        .details-top-bar { padding: 16px; position: absolute; top: 0; left: 0; width: 100%; z-index: 5; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
+        .details-close-btn { width: 32px; height: 32px; background: rgba(0,0,0,0.5); border-radius: 50%; border: none; color: white; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .details-hero { width: 100%; height: 220px; background: linear-gradient(135deg, #1e293b, #1f232a); display: flex; align-items: center; justify-content: center; }
+        .details-hero-title { font-size: 20px; font-weight: bold; color: #ffffff; text-align: center; padding: 0 20px; }
+        .details-content { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .details-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--card-bg, #1f232a); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; }
+        .details-label { color: #aaa; font-weight: 500; }
+        .details-val { color: #fff; font-weight: bold; }
+        .details-bottom-bar { position: absolute; bottom: 0; left: 0; width: 100%; padding: 16px; background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(5px); border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: center; z-index: 10; }
+        
+        .play-orange-btn { width: 100%; max-width: 400px; height: 54px; background: var(--play-btn-bg, #0070f3); border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 112, 243, 0.4); transition: background 0.3s ease; }
+        .play-orange-btn svg { width: 28px; height: 28px; fill: #ffffff; }
+
+        .marketplace-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(15, 17, 21, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-weight: bold; }
+        .customize-badge { background: var(--accent-color, #0070f3); color: #ffffff; padding: 4px 12px; border-radius: 16px; font-size: 13px; font-weight: bold; }
+        #avatar-3d-preview-container { width: 100%; height: 260px; background: #12151a; position: relative; overflow: hidden; }
+        #avatar-3d-canvas { width: 100%; height: 100%; display: block; }
+        .avatar-categories-bar { display: flex; gap: 12px; padding: 10px 16px; background: #0f1115; border-bottom: 1px solid rgba(255, 255, 255, 0.08); overflow-x: auto; }
+        .avatar-cat-tab { font-size: 13px; font-weight: bold; color: #aaa; cursor: pointer; white-space: nowrap; padding-bottom: 4px; }
+        .avatar-cat-tab.active { color: var(--accent-color, #0070f3); border-bottom: 2px solid var(--accent-color, #0070f3); }
+        .avatar-customizer-panel { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .customizer-group { background: var(--card-bg, #1f232a); padding: 12px 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .color-picker-input { appearance: none; -webkit-appearance: none; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; background: none; }
+        .color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-picker-input::-webkit-color-swatch { border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 50%; }
+
+        .accessories-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .acc-card { background: var(--card-bg, #1f232a); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+        .acc-name { font-size: 12px; font-weight: bold; color: #fff; }
+        .acc-price { font-size: 11px; font-weight: bold; color: var(--accent-text, #3b82f6); }
+        .acc-btn { background: var(--accent-color, #0070f3); color: #ffffff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: bold; cursor: pointer; width: 100%; }
+        .acc-btn.owned { background: #2a2a33; color: #aaa; cursor: default; }
+
+        .skin-colors-row { display: flex; gap: 8px; margin-top: 6px; justify-content: center; }
+        .skin-preset-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; transition: transform 0.2s; }
+        .skin-preset-btn:hover { transform: scale(1.1); border-color: #fff; }
+
+        .menu-bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: rgba(15, 17, 21, 0.95); backdrop-filter: blur(5px); border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: space-around; z-index: 10; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #888; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--accent-color, #0070f3); }
+        .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
+
+        /* ИГРОВОЙ TAB / СПИСОК ИГРОКОВ */
+        #player-list-ui { position: absolute; top: 15px; right: 15px; width: 290px; background: rgba(22, 26, 34, 0.94); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px; z-index: 150; display: none; flex-direction: column; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.7); overflow: hidden; }
+        .player-list-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; font-weight: bold; color: #fff; background: rgba(0,0,0,0.2); }
+        .player-list-close { background: none; border: none; color: white; font-size: 16px; cursor: pointer; }
+        .player-rows-container { max-height: 240px; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+        .player-row-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: rgba(34, 39, 48, 0.85); border-radius: 10px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        .player-row-item:hover { background: rgba(0, 112, 243, 0.25); border-color: rgba(0, 112, 243, 0.5); }
+        .player-row-name { font-size: 13.5px; font-weight: bold; color: white; display: flex; align-items: center; gap: 6px; }
+        .player-row-score { font-size: 12.5px; color: var(--accent-text, #3b82f6); font-weight: bold; }
+
+        /* КОНТЕКСТНОЕ МЕНЮ ИГРОКА */
+        #player-action-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(6px); z-index: 600; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .player-action-card { background: #161a22; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; width: 100%; max-width: 320px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+        .pac-header { padding: 18px; display: flex; flex-direction: column; align-items: center; text-align: center; background: rgba(25,30,40,0.8); border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .pac-avatar { width: 56px; height: 56px; border-radius: 50%; background: #222; border: 2px solid #383d48; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .pac-name { font-size: 16px; font-weight: bold; color: #fff; }
+        .pac-handle { font-size: 12px; color: #aaa; margin-top: 2px; }
+        .pac-btn { padding: 14px 18px; background: none; border: none; border-bottom: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .pac-btn:hover { background: rgba(255,255,255,0.06); }
+        .pac-btn:last-child { border-bottom: none; }
+        .pac-close-btn { padding: 12px; background: #222730; color: #aaa; border: none; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
+
+        #game-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 100; overflow: hidden; }
+        #game-container { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+        
+        #roblox-ui-top-left { position: absolute; top: 15px; left: 15px; display: flex; align-items: center; gap: 12px; z-index: 50; }
+        #roblox-logo-btn { width: 44px; height: 44px; background: var(--card-bg, #1f232a); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); cursor: pointer; border: 2px solid var(--accent-color, #0070f3); }
+        #roblox-logo-btn svg { width: 22px; height: 22px; fill: var(--accent-color, #0070f3); }
+
+        #roblox-pill-menu { height: 44px; background: var(--card-bg, #1f232a); border-radius: 22px; display: flex; align-items: center; padding: 0 14px; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); border: 2px solid rgba(255, 255, 255, 0.1); }
+        .pill-icon-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px; position: relative; }
+        .pill-icon-btn svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        #candy-counter-hud { position: absolute; top: 70px; right: 20px; background: rgba(26, 31, 38, 0.85); border: 1px solid var(--accent-color, #0070f3); padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; z-index: 50; color: var(--accent-text, #3b82f6); backdrop-filter: blur(4px); display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+
+        #halloween-gui { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg, #1f232a); border: 2px solid var(--accent-color, #0070f3); border-radius: 16px; padding: 20px; width: 320px; max-width: 90vw; z-index: 150; display: none; flex-direction: column; gap: 12px; text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        .gui-title { font-size: 18px; font-weight: bold; color: var(--accent-text, #3b82f6); }
+        .gui-desc { font-size: 13px; color: #ccc; }
+        .gui-btn-row { display: flex; gap: 10px; }
+        .gui-choice-btn { flex: 1; background: var(--accent-color, #0070f3); color: #ffffff; border: none; border-radius: 8px; padding: 10px; font-weight: bold; font-size: 13px; cursor: pointer; }
+        .gui-close-btn { background: #2a2a33; color: #aaa; border: none; border-radius: 8px; padding: 8px; font-size: 12px; cursor: pointer; }
+
+        #chat-box { position: absolute; top: 75px; left: 15px; width: 330px; max-width: 85vw; background: rgba(26, 31, 38, 0.9); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; z-index: 100; display: none; flex-direction: column; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+        .chat-content-area { padding: 12px; max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #d0d0d0; }
+        .chat-line { word-break: break-all; line-height: 1.4; }
+        .chat-line span { color: var(--accent-text, #3b82f6); font-weight: 500; }
+        .chat-input-container { padding: 10px 12px; background: rgba(18, 21, 26, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; gap: 8px; }
+        .chat-input { flex: 1; background: #222730; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 8px 12px; color: white; font-size: 13px; outline: none; }
+        .chat-send-icon-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; }
+        .chat-send-icon-btn svg { width: 18px; height: 18px; fill: var(--accent-color, #0070f3); }
+
+        #touch-look-zone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: auto; touch-action: none; }
+        
+        #joystick-container { position: absolute; bottom: 40px; left: 40px; width: 120px; height: 120px; background: rgba(0, 112, 243, 0.1); border: 2px solid rgba(0, 112, 243, 0.3); border-radius: 50%; z-index: 20; touch-action: none; }
+        #joystick-stick { position: absolute; top: 50%; left: 50%; width: 50px; height: 50px; background: rgba(0, 112, 243, 0.5); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+        
+        .game-buttons-group { position: absolute; bottom: 40px; right: 40px; display: flex; flex-direction: column; gap: 10px; z-index: 25; align-items: flex-end; }
+        .game-action-circle-btn { width: 65px; height: 65px; background: rgba(0, 112, 243, 0.3); border: 2px solid rgba(0, 112, 243, 0.6); border-radius: 50%; color: white; font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: none; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        
+        #debug-username-banner { position: absolute; bottom: 10px; left: 15px; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--accent-text, #3b82f6); z-index: 50; pointer-events: none; }
+        
+        .theme-buttons-row { display: flex; gap: 8px; }
+        .theme-select-btn { background: #1f232a; border: 1px solid rgba(255,255,255,0.15); color: #aaa; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .theme-select-btn.active { background: #0070f3; color: #fff; border-color: #0070f3; }
+        .settings-card { background: #1f232a; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+        .settings-title { font-size: 18px; font-weight: bold; color: #fff; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #ccc; }
+        .settings-value-box { background: #12151a; padding: 6px 10px; border-radius: 6px; color: #fff; font-weight: bold; }
+        .setting-slider { width: 120px; }
+        .settings-close-btn { background: #0070f3; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .logout-btn-settings { background: #334155; color: #fff; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        #settings-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; }
+        #auth-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0f1115; z-index: 3000; display: none; align-items: center; justify-content: center; padding: 15px; overflow-y: auto; }
+        .auth-card { background: #1f232a; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; width: 90%; max-width: 380px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+        .auth-logo { display: flex; justify-content: center; margin-bottom: 6px; }
+        .auth-field-group { display: flex; flex-direction: column; gap: 6px; }
+        .auth-label { font-size: 12px; color: #aaa; display: flex; justify-content: space-between; }
+        .auth-input { background: #12151a; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 14px; outline: none; }
+        .auth-error { font-size: 12px; color: #ff5252; min-height: 16px; }
+        .auth-btn { background: #0070f3; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .admin-btn-hud-global { background: #ff9500; color: #fff; border: none; padding: 6px 12px; border-radius: 16px; font-weight: bold; cursor: pointer; font-size: 12px; display: flex; align-items: center; }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body onclick="startBackgroundMusic()">
+
+    <div id="app-window-frame">
+
+        <!-- Контекстное меню игрока по клику в Tab -->
+        <div id="player-action-modal">
+            <div class="player-action-card">
+                <div class="pac-header">
+                    <div class="pac-avatar" id="pac-avatar-icon"></div>
+                    <div class="pac-name" id="pac-modal-name">Player Name</div>
+                    <div class="pac-handle" id="pac-modal-handle">@playername</div>
+                </div>
+                <button class="pac-btn" onclick="pacActionAddFriend()">
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                    <span id="pac-addfriend-text">Add Friend</span>
+                </button>
+                <button class="pac-btn" onclick="pacActionInspect()">
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span id="pac-inspect-text">Inspect Avatar</span>
+                </button>
+                <button class="pac-btn" onclick="pacActionDirectMessage()" style="color:#3b82f6; position:relative;">
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span id="pac-chat-text">Чат (1 на 1)</span>
+                </button>
+                <button class="pac-btn" onclick="pacActionBlock()" style="color:#ff5252;">
+                    <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    <span id="pac-block-text">Block</span>
+                </button>
+                <button class="pac-close-btn" onclick="closePlayerActionModal()">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- Уведомление о Warning -->
+        <div id="global-warning-overlay">
+            <div class="error-277-card" style="border-color: #ff9500;">
+                <div class="error-277-title" style="color: #ff9500;">⚠️ Предупреждение (Warning)</div>
+                <div class="error-277-desc" id="global-warning-text">Администратор выдал вам предупреждение!</div>
+                <button class="error-277-btn" onclick="closeGlobalWarning()">Понятно</button>
+            </div>
+        </div>
+
+        <!-- Уведомление о Бане -->
+        <div id="global-ban-overlay">
+            <div class="error-277-card">
+                <div class="error-277-title">⛔ Вы заблокированы (Banned)</div>
+                <div class="error-277-desc" id="global-ban-text">Ваш аккаунт был заблокирован администратором на этом сервере.</div>
+                <button class="error-277-btn" style="background:#e11d48;" onclick="logoutAccountFromBan()">Сменить аккаунт / Выйти</button>
+            </div>
+        </div>
+
+        <div id="admin-panel">
+            <div class="admin-header">
+                <span id="admin-panel-title-text">👑 Панель Администратора</span>
+                <button class="admin-close-btn" onclick="toggleAdminPanel()">✕</button>
+            </div>
+            <div class="admin-section">
+                <div class="admin-section-title" id="admin-candy-title-text">🍬 Управление конфетами</div>
+                <input type="number" id="admin-candy-input" class="admin-input" placeholder="Количество конфет (0-250)">
+                <button class="admin-btn" id="admin-candy-btn-text" onclick="adminGiveCandy()">Выдать конфеты</button>
+            </div>
+            
+            <div class="admin-section">
+                <div class="admin-section-title">⚠️ Выдать Warning (Предупреждение)</div>
+                <input type="text" id="admin-warn-username" class="admin-input" placeholder="Точный ник игрока">
+                <input type="text" id="admin-warn-reason" class="admin-input" placeholder="Причина предупреждения">
+                <button class="admin-btn" style="background:#ff9500;" onclick="adminIssueWarning()">Отправить Warning</button>
+            </div>
+
+            <div class="admin-section">
+                <div class="admin-section-title">⛔ Забанить игрока (Ban)</div>
+                <input type="text" id="admin-ban-username" class="admin-input" placeholder="Точный ник игрока">
+                <input type="text" id="admin-ban-reason" class="admin-input" placeholder="Причина бана">
+                <div style="font-size:12px; color:#aaa; margin-top:4px;">Срок блокировки:</div>
+                <select id="admin-ban-duration" class="admin-select">
+                    <option value="1">На 1 день</option>
+                    <option value="3">На 3 дня</option>
+                    <option value="7">На 7 дней</option>
+                    <option value="30">На 30 дней</option>
+                    <option value="0">Навсегда (Permanent)</option>
+                </select>
+                <button class="admin-btn admin-btn-danger" style="margin-top:4px;" onclick="adminIssueBan()">Забанить игрока</button>
+            </div>
+
+            <div class="admin-section">
+                <div class="admin-section-title" id="admin-addadmin-title-text">➕ Управление администраторами</div>
+                <input type="text" id="admin-username-input" class="admin-input" placeholder="Точный ник игрока">
+                <button class="admin-btn" id="admin-addadmin-btn-text" onclick="adminAddAdminUser()">Сделать админом</button>
+                <div class="admin-section-title" style="margin-top:10px;">Список текущих админов:</div>
+                <div class="admin-list-box" id="admin-list-container-box"></div>
+            </div>
+        </div>
+
+        <div id="enjoy-halloween-modal">
+            <div class="halloween-modal-card">
+                <button class="halloween-modal-close" onclick="hideEnjoyHalloweenModal()">✕</button>
+                <div class="halloween-modal-logo">
+                    <div class="roblox-logo-wrapper">
+                        <div class="roblox-exact-logo">Roblox Halloween 🎃</div>
+                    </div>
+                </div>
+                <div class="halloween-modal-title" id="H-modal-title">С праздником Хеллоуин!</div>
+                <div class="halloween-modal-desc" id="H-modal-desc">Погрузитесь в мистическую атмосферу этого вечера и активируйте эксклюзивную тему!</div>
+                <button class="halloween-modal-btn" id="H-modal-btn" onclick="applyHalloweenThemeAndClose()">Получить тему 🎃</button>
+            </div>
+        </div>
+
+        <div id="halloween-bg-fx">
+            <div class="halloween-glow"></div>
+            <div class="bat" style="width: 35px; height: 15px; animation-duration: 9s; left: 10%;"></div>
+            <div class="bat" style="width: 25px; height: 11px; animation-duration: 12s; left: 60%;"></div>
+        </div>
+
+        <div id="error-277-overlay">
+            <div class="error-277-card">
+                <div class="error-277-title" id="err-277-title">Ошибка подключения (Код: 277)</div>
+                <div class="error-277-desc" id="err-277-desc">Не удалось подключиться к игровым серверам Roblox.</div>
+                <button class="error-277-btn" onclick="closeError277Modal()">ОК</button>
+            </div>
+        </div>
+
+        <div id="social-list-modal">
+            <div class="social-top-bar">
+                <button class="social-back-btn" onclick="closeSocialListModal()">←</button>
+                <span id="social-modal-title">Список</span>
+            </div>
+            <div class="social-list-body" id="social-list-container"></div>
+        </div>
+
+        <div id="private-dm-modal">
+            <div class="dm-top-bar">
+                <button class="dm-back-btn" onclick="closePrivateDM()">←</button>
+                <div class="dm-header-info">
+                    <div id="dm-partner-initial" style="width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden;"></div>
+                    <span id="dm-partner-name">Игрок</span>
+                </div>
+            </div>
+            <div class="dm-messages-box" id="dm-messages-container"></div>
+            <div class="dm-input-row">
+                <input type="text" class="dm-input-field" id="dm-input-field" placeholder="Сообщение 1 на 1...">
+                <button class="dm-send-btn" id="dm-send-btn-text" onclick="sendPrivateMessage()">Отправить</button>
+            </div>
+        </div>
+
+        <div id="roblox-esc-menu">
+            <div class="esc-top-header">
+                <div class="esc-nav-tabs">
+                    <button class="esc-tab-btn active" id="esc-tab-players" onclick="switchEscTab('people', this)">Игроки</button>
+                    <button class="esc-tab-btn" id="esc-tab-settings" onclick="switchEscTab('settings', this)">Настройки</button>
+                </div>
+            </div>
+            <div class="esc-main-panel">
+                <div class="esc-section-heading" id="esc-server-heading">На этом сервере</div>
+                <div class="esc-content-box" id="esc-players-box"></div>
+            </div>
+            <div class="esc-bottom-controls">
+                <button class="esc-action-btn esc-btn-leave" id="esc-btn-leave" onclick="promptLeaveGame()">Выйти</button>
+                <button class="esc-action-btn esc-btn-respawn" id="esc-btn-respawn" onclick="promptRespawn()">Возродиться</button>
+                <button class="esc-action-btn esc-btn-resume" id="esc-btn-resume" onclick="closeEscMenu()">Продолжить</button>
+            </div>
+        </div>
+
+        <div id="respawn-confirm-frame">
+            <div class="respawn-confirm-card">
+                <div class="respawn-confirm-title" id="respawn-confirm-text">Хотите возродиться на точке спавна?</div>
+                <div class="respawn-confirm-btns">
+                    <button class="respawn-btn-yes" id="respawn-yes-btn" onclick="confirmRespawn()">Да</button>
+                    <button class="respawn-btn-no" id="respawn-no-btn" onclick="closeRespawnConfirm()">Нет</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="leave-confirm-frame">
+            <div class="respawn-confirm-card">
+                <div class="respawn-confirm-title" id="leave-confirm-text">Вы действительно хотите выйти из игры в главное меню?</div>
+                <div class="respawn-confirm-btns">
+                    <button class="respawn-btn-yes" id="leave-yes-btn" onclick="confirmExitGame()" style="background:#e11d48;">Да</button>
+                    <button class="respawn-btn-no" id="leave-no-btn" onclick="closeLeaveConfirm()">Нет</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading-screen">
+            <div class="loading-logo">
+                <div class="roblox-logo-wrapper">
+                    <div class="roblox-exact-logo" id="loading-logo-text">Roblox 🎃</div>
+                </div>
+            </div>
+            <div class="loading-bar-container"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
+            <div class="loading-tip" id="loading-tip-text">Подключение к игровому серверу...</div>
+        </div>
+
+        <div id="profile-modal-overlay">
+            <div class="profile-top-bar"><button class="profile-close-btn" onclick="closeProfileModal()">✕</button></div>
+            <div class="profile-3d-hero"><div id="profile-3d-canvas"></div></div>
+            
+            <div class="profile-info-section">
+                <div class="profile-user-row">
+                    <div class="profile-avatar-circle-wrap">
+                        <div class="profile-avatar-circle" id="profile-avatar-initial"></div>
+                        <div class="profile-online-badge" id="profile-online-indicator"></div>
+                    </div>
+
+                    <div class="profile-names-column">
+                        <div class="profile-display-name" id="profile-display-name">
+                            MONSTER_14982 <span id="verified-badge" class="roblox-verified-badge" style="display: none;"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                        </div>
+                        <div class="profile-handle-name" id="profile-handle-name">@MONSTER_14982</div>
+                    </div>
+                </div>
+                
+                <div class="profile-bio-box" id="profile-bio-container">
+                    <span id="profile-bio-text">Welcome to the Roblox profile! This is where you can check out the newest items in the catalog...</span>
+                    <span class="profile-more-btn" id="profile-more-btn" onclick="toggleBioExpand()">more</span>
+                </div>
+                <div id="profile-edit-box" style="display:none; flex-direction:column; gap:6px;">
+                    <span style="font-size:12px; color:#aaa; font-weight:bold;">Редактировать описание профиля:</span>
+                    <textarea class="profile-edit-input" id="profile-bio-input" rows="3" placeholder="Расскажите о себе..."></textarea>
+                    <button class="profile-main-btn" style="padding: 8px; font-size:12px;" onclick="saveMyBio()">Сохранить описание</button>
+                </div>
+
+                <div class="profile-stats-row">
+                    <div class="profile-stat-badge" onclick="openSocialModal('friends')">👥 <span id="profile-friends-count">0</span> <span id="prof-friends-txt">Друзей</span></div>
+                    <div class="profile-stat-badge" onclick="openSocialModal('followers')">⭐ <span id="profile-followers-count">0</span> <span id="prof-followers-txt">Подписчиков</span></div>
+                    <div class="profile-stat-badge" onclick="openSocialModal('following')">🔗 <span id="profile-following-count">0</span> <span id="prof-following-txt">Подписок</span></div>
+                </div>
+
+                <div class="profile-divider"></div>
+
+                <div class="profile-actions-row">
+                    <button class="profile-main-btn" id="profile-action-btn" onclick="toggleFollowProfileUser()">Подписаться</button>
+                    <!-- Кнопка ЛС с красной точкой непрочитанных сообщений -->
+                    <button class="profile-secondary-btn" id="profile-dm-btn" onclick="openPrivateDMFromProfile()">
+                        💬 ЛС
+                        <div class="dm-unread-dot" id="profile-dm-unread-dot"></div>
+                    </button>
+                </div>
+
+                <div class="profile-section-heading" id="prof-wearing-heading">Currently Wearing</div>
+                <div class="currently-wearing-grid" id="profile-wearing-grid">
+                    <div class="wearing-item-card">
+                        <div class="wearing-item-icon">🧢</div>
+                        <div class="wearing-item-title">Roblox Cap</div>
+                        <div class="wearing-item-price" style="color:#4cd137;">Free</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="friends-screen-overlay">
+            <div class="friends-top-header">
+                <div class="friends-search-row">
+                    <button class="friends-back-btn" onclick="closeFriendsScreen()">←</button>
+                    <div class="friends-search-input-wrap">
+                        <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#aaa;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" class="friends-search-input" id="friends-search-field" placeholder="Search for people by exact nickname" oninput="filterRealPlayers(this.value)">
+                    </div>
+                </div>
+                <div class="friends-tabs-row">
+                    <div class="friends-tab-item active" id="friends-tab-title" onclick="switchFriendsTab('friends', this)">Friends (<span id="friends-tab-count">0</span>)</div>
+                    <div class="friends-tab-item" id="search-tab-title" onclick="switchFriendsTab('add', this)">Search players</div>
+                </div>
+                <div class="friends-filters-row">
+                    <div class="friend-filter-chip active" id="filter-all" onclick="setFriendFilter('all', this)">All</div>
+                    <div class="friend-filter-chip" id="filter-online" onclick="setFriendFilter('online', this)">Online</div>
+                </div>
+            </div>
+            <div class="friends-list-container" id="friends-list-container-box"></div>
+        </div>
+
+        <div id="auth-screen">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <div class="roblox-logo-wrapper">
+                        <div class="roblox-exact-logo" id="auth-logo-text">Roblox 🎃</div>
+                    </div>
+                </div>
+                <div class="auth-field-group">
+                    <span class="auth-label" id="auth-user-label">Никнейм в игре <span>3–20 латинских символов</span></span>
+                    <input type="text" class="auth-input" id="reg-username" maxlength="20" placeholder="Ваш никнейм">
+                </div>
+                <div class="auth-field-group">
+                    <span class="auth-label" id="auth-pass-label">Пароль аккаунта <span>Латиница и цифры</span></span>
+                    <input type="password" class="auth-input" id="reg-password" maxlength="200" placeholder="Введите пароль">
+                </div>
+                <div class="auth-error" id="auth-error-msg"></div>
+                <button class="auth-btn" id="auth-submit-btn" onclick="handleRegisterOrLogin()">Войти / Зарегистрироваться</button>
+            </div>
+        </div>
+
+        <div id="settings-frame">
+            <div class="settings-card">
+                <div class="settings-title" id="set-title">⚙️ Настройки игры</div>
+                <div class="settings-row">
+                    <span class="settings-label"><span id="set-acc-label">Текущий аккаунт</span></span>
+                    <div class="settings-value-box" id="settings-display-username">Hacker</div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><span id="set-region-label">🌍 Твой Регион (по IP)</span></span>
+                    <div class="settings-value-box" id="settings-region-display">🌐 Определение региона...</div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><span id="set-lang-label">🌐 Язык / Мова / Language</span></span>
+                    <div class="theme-buttons-row">
+                        <button class="theme-select-btn active" id="lang-btn-ru" onclick="setLanguage('ru')">RU</button>
+                        <button class="theme-select-btn" id="lang-btn-uk" onclick="setLanguage('uk')">UKR</button>
+                        <button class="theme-select-btn" id="lang-btn-en" onclick="setLanguage('en')">EN</button>
+                    </div>
+                </div>
+                <div class="settings-row" id="theme-settings-row">
+                    <span class="settings-label"><span id="set-theme-label">🎨 Выбор темы оформления</span></span>
+                    <div class="theme-buttons-row">
+                        <button class="theme-select-btn" id="theme-btn-normal" onclick="setAppTheme('normal')">Normal</button>
+                        <button class="theme-select-btn" id="theme-btn-halloween" style="display:none;" onclick="setAppTheme('halloween')">Roblox Halloween 🎃</button>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label"><span id="set-sfx-label">🔊 Звуковые эффекты (SFX)</span><span id="sfx-vol-val">100%</span></span>
+                    <input type="range" class="setting-slider" id="sfx-volume-slider" min="0" max="100" value="100" oninput="updateSFXVolume(this.value)">
+                </div>
+
+                <button class="settings-close-btn" id="set-close-btn" onclick="closeSettings()">Закрыть настройки</button>
+                <button class="logout-btn-settings" id="set-logout-btn" onclick="logoutAccount()">Сменить аккаунт</button>
+            </div>
+        </div>
+
+        <div id="game-details-screen">
+            <div class="details-top-bar"><button class="details-close-btn" onclick="closeGameDetails()">✕</button></div>
+            <div class="details-hero"><div class="details-hero-title" id="details-game-title">Roblox Game 🎮</div></div>
+            <div class="details-content">
+                <div class="details-row"><span class="details-label" id="det-visits-label">Посещения</span><span class="details-val">1.4K</span></div>
+                <div class="details-row"><span class="details-label" id="det-status-label">Статус</span><span class="details-val" id="det-status-val" style="color:#22c55e;">Доступно для игры</span></div>
+            </div>
+            <div class="details-bottom-bar">
+                <button class="play-orange-btn" onclick="startLoadingAndEnterGame()">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="menu-screen">
+            <div class="menu-halloween-spider-wrap" id="menu-halloween-spider-wrap">
+                <svg class="spider-web-corner" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M160 0L0 0M160 30L30 0M160 70L70 0M160 120L120 0M160 160L160 0" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+                    <path d="M160 0C130 30 110 50 0 160M160 40C135 60 120 75 0 160M160 80C140 95 130 105 0 160M160 120C145 130 135 138 0 160" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
+                </svg>
+                <div class="hanging-spider-container">
+                    <div class="spider-thread"></div>
+                    <svg class="spider-body-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 24L8 14M24 24L4 22M24 24L6 32M24 24L10 40" stroke="#000" stroke-width="3.2" stroke-linecap="round"/>
+                        <path d="M24 24L40 14M24 24L44 22M24 24L42 32M24 24L38 40" stroke="#000" stroke-width="3.2" stroke-linecap="round"/>
+                        <ellipse cx="24" cy="27" rx="10" ry="12" fill="#0b090f"/>
+                        <circle cx="24" cy="16" r="7" fill="#0b090f"/>
+                        <circle cx="21.5" cy="15" r="2" fill="#ff7b00"/><circle cx="26.5" cy="15" r="2" fill="#ff7b00"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="menu-top-bar">
+                <div class="menu-logo-area" onclick="handleLogoEasterEgg()">
+                    <div class="roblox-logo-wrapper">
+                        <div class="roblox-exact-logo" id="menu-main-logo-text">Roblox</div>
+                    </div>
+                </div>
+                <div class="menu-top-icons">
+                    <button id="menu-admin-btn" class="admin-btn-hud-global" style="display:none;" onclick="toggleAdminPanel()">👑 Админ</button>
+                    <div class="robux-counter-pill">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        <span id="robux-count-val">100</span>
+                    </div>
+                    <div class="top-icon-btn" id="top-profile-avatar-btn" onclick="openProfileModal(currentUsername, skinColors, true)"></div>
+                    <div class="top-icon-btn" onclick="openSettings()">
+                        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c-.5.38-1.03.7-1.62.94l-.36 2.54c-.05.24.24.41.48.41h3.84c-.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-home" class="menu-page active">
+                <div class="user-profile-row" onclick="openProfileModal(currentUsername, skinColors, true)">
+                    <div class="user-left-info">
+                        <div class="user-avatar-circle" id="user-initial"></div>
+                        <div class="user-name" id="display-username">
+                            Hacker <span id="menu-verified-badge" class="roblox-verified-badge" style="display: none;"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title" id="home-section-title">🎮 Рекомендуемые игры</div>
+                <div class="games-grid" id="menu-games-grid-box">
+                    <div class="game-card" onclick="openGameDetails('Roblox Halloween 🎃')">
+                        <div class="game-thumbnail">
+                            <div style="font-weight: bold; font-size: 16px; color: #ff7b00; text-shadow: 0 0 10px rgba(255,123,0,0.6);">🦇 Roblox Halloween 🎃</div>
+                        </div>
+                        <div class="game-info">
+                            <div class="game-card-title" id="card-game-title">Собери конфеты у жителей квартала!</div>
+                            <div class="game-rating" id="card-game-desc">🍬 Интерактивные дома • 99% Рейтинг</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-avatar" class="menu-page">
+                <div class="marketplace-header">
+                    <span id="shop-header-title">🍬 Магазин Конфет и Зелий</span>
+                    <span class="customize-badge" id="menu-candy-display">0 Конфет</span>
+                </div>
+                <div id="avatar-3d-preview-container"><div id="avatar-3d-canvas"></div></div>
+                
+                <div style="padding: 12px 16px; background: rgba(25,20,33,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 13px; font-weight: bold; color: #ddd;">👤 Цвет кожи персонажа:</span>
+                    <div class="skin-colors-row">
+                        <div class="skin-preset-btn" style="background: #f5d0b1;" onclick="changeSkinColor('#f5d0b1')"></div>
+                        <div class="skin-preset-btn" style="background: #eac086;" onclick="changeSkinColor('#eac086')"></div>
+                        <div class="skin-preset-btn" style="background: #d49b6a;" onclick="changeSkinColor('#d49b6a')"></div>
+                        <div class="skin-preset-btn" style="background: #8d5524;" onclick="changeSkinColor('#8d5524')"></div>
+                        <div class="skin-preset-btn" style="background: #ffcc00;" onclick="changeSkinColor('#ffcc00')"></div>
+                    </div>
+                </div>
+
+                <div class="avatar-categories-bar">
+                    <div class="avatar-cat-tab active" id="tab-shirts-title" onclick="switchAvatarSubTab('shirts', this)">👕 Shirts</div>
+                    <div class="avatar-cat-tab" id="tab-pants-title" onclick="switchAvatarSubTab('pants', this)">👖 Pants</div>
+                    <div class="avatar-cat-tab" id="tab-faces-title" onclick="switchAvatarSubTab('faces', this)">😊 Лица</div>
+                    <div class="avatar-cat-tab" id="tab-anim-title" onclick="switchAvatarSubTab('anim', this)">🏃 Анимации</div>
+                    <div class="avatar-cat-tab" id="tab-acc-title" onclick="switchAvatarSubTab('acc', this)">🎃 Аксессуары</div>
+                    <div class="avatar-cat-tab" id="tab-buffs-title" onclick="switchAvatarSubTab('buffs', this)" style="color:#ff9500;">🧪 Зелья баффов</div>
+                </div>
+                
+                <div id="subtab-shirts" class="avatar-customizer-panel">
+                    <div class="accessories-grid">
+                        <div class="acc-card">
+                            <div style="font-size:26px;">🧥</div>
+                            <div class="acc-name">ROBLOX Jacket</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn owned" id="shirt-btn-jacket" onclick="equipShirt('jacket')">Надето</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">👕</div>
+                            <div class="acc-name">Orange Classic Shirt</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn" id="shirt-btn-orange" onclick="equipShirt('orange')">Надеть</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subtab-pants" class="avatar-customizer-panel" style="display: none;">
+                    <div class="accessories-grid">
+                        <div class="acc-card">
+                            <div style="font-size:26px;">👖</div>
+                            <div class="acc-name">Oakley Pants</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn owned" id="pants-btn-oakley" onclick="equipPants('oakley')">Надето</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">👖</div>
+                            <div class="acc-name">Classic Jeans</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn" id="pants-btn-classic" onclick="equipPants('classic')">Надеть</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">⬛</div>
+                            <div class="acc-name">Black Pants</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn" id="pants-btn-black" onclick="equipPants('black')">Надеть</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subtab-faces" class="avatar-customizer-panel" style="display: none;">
+                    <div class="accessories-grid">
+                        <div class="acc-card">
+                            <div style="font-size:26px;">😊</div>
+                            <div class="acc-name">Classic Face</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn owned" id="face-btn-classic" onclick="equipFace('classic')">Надето</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">😎</div>
+                            <div class="acc-name">Cool Sunglasses</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn" id="face-btn-cool" onclick="equipFace('cool')">Надеть</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subtab-anim" class="avatar-customizer-panel" style="display: none;">
+                    <div class="accessories-grid">
+                        <div class="acc-card">
+                            <div style="font-size:26px;">🏃</div>
+                            <div class="acc-name">Default Animation</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn owned" id="anim-btn-default" onclick="equipAnimation('default')">Надето</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">💎</div>
+                            <div class="acc-name">Levitation & Fly</div>
+                            <div class="acc-price" style="color: #0070f3;">R$ 20 Robux</div>
+                            <button class="acc-btn" id="anim-btn-levitation" onclick="buyOrEquipAnimation('levitation', 20)">Купить</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subtab-acc" class="avatar-customizer-panel" style="display: none;">
+                    <div class="accessories-grid">
+                        <div class="acc-card">
+                            <div style="font-size:26px;">🧢</div>
+                            <div class="acc-name">Roblox Cap</div>
+                            <div class="acc-price" style="color: #4cd137;">Free</div>
+                            <button class="acc-btn owned" id="acc-btn-cap" onclick="equipAccessory('cap')">Надето</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">🎃</div>
+                            <div class="acc-name">Тыквенная голова</div>
+                            <div class="acc-price" style="color: #4cd137;">Бесплатно</div>
+                            <button class="acc-btn" id="acc-btn-pumpkin" onclick="equipAccessory('pumpkin')">Надеть</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Магазин баффов и зелий -->
+                <div id="subtab-buffs" class="avatar-customizer-panel" style="display: none;">
+                    <div class="accessories-grid">
+                        <div class="acc-card">
+                            <div style="font-size:26px;">⚡</div>
+                            <div class="acc-name">Зелье Ускорения (30 сек)</div>
+                            <div class="acc-price" style="color: #ff9500;">🍬 10 конфет</div>
+                            <button class="acc-btn" style="background:#ff9500;" onclick="buyBuff('speed', 10)">Купить бафф</button>
+                        </div>
+                        <div class="acc-card">
+                            <div style="font-size:26px;">🚀</div>
+                            <div class="acc-name">Зелье Супер-прыжка (30 сек)</div>
+                            <div class="acc-price" style="color: #ff9500;">🍬 15 конфет</div>
+                            <button class="acc-btn" style="background:#ff9500;" onclick="buyBuff('jump', 15)">Купить бафф</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-bottom-nav">
+                <div class="nav-item active" id="nav-home-btn" onclick="switchTab('home')">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span id="nav-home-txt">Главная</span>
+                </div>
+                <div class="nav-item" id="nav-friends-btn" onclick="openFriendsScreen()">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span id="nav-friends-txt">Friends</span>
+                </div>
+                <div class="nav-item" id="nav-avatar-btn" onclick="switchTab('avatar')">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="nav-avatar-txt">Аватар</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-screen">
+            <div id="game-container"></div>
+            <div id="candy-counter-hud">
+                <div>🍬 <span id="hud-candy-label">Конфеты</span>: <span id="candy-count">0</span> / 250</div>
+                <div id="active-buff-timer" style="font-size:11px; color:#ffb74d; display:none;"></div>
+            </div>
+            <div id="debug-username-banner"><span id="hud-nick-label">Ник</span>: <span id="debug-name-span">...</span></div>
+
+            <!-- ИГРОВОЙ TAB С ПЛЕЕРАМИ -->
+            <div id="player-list-ui">
+                <div class="player-list-header">
+                    <span id="players-title">Игроки (Tab)</span>
+                    <button class="player-list-close" onclick="togglePlayerList(false)">✕</button>
+                </div>
+                <div class="player-rows-container" id="player-rows-box"></div>
+            </div>
+
+            <div id="chat-box">
+                <div class="chat-content-area" id="chat-messages-box">
+                    <div class="chat-line"><span id="sys-chat-name">Система:</span> <span id="sys-chat-text">Добро пожаловать в игру!</span></div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chat-input-field" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                    <button class="chat-send-icon-btn" onclick="sendChatMessage()">
+                        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Halloween GUI / Квесты и Дома -->
+            <div id="halloween-gui">
+                <div class="gui-title" id="gui-house-title">👻 Кто-то открыл дверь!</div>
+                <div class="gui-desc" id="gui-house-desc">Житель смотрит на вас из проема...</div>
+                <div class="gui-btn-row">
+                    <button class="gui-choice-btn" id="gui-ask-btn" onclick="chooseTrickOrTreat()">🍬 Просить конфеты</button>
+                    <button class="gui-choice-btn" id="gui-quest-btn" style="background:#ff9500; display:none;" onclick="acceptQuestFromNPC()">📜 Взять квест</button>
+                </div>
+                <button class="gui-close-btn" id="gui-close-btn" onclick="closeHalloweenGui()">Отойти от двери</button>
+            </div>
+            
+            <div id="roblox-ui-top-left">
+                <div id="roblox-logo-btn" onclick="openEscMenu()">
+                    <svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="12" transform="rotate(-12 50 50)" /><rect x="30" y="30" width="40" height="40" rx="6" transform="rotate(-12 50 50)" fill="#1f232a" /></svg>
+                </div>
+                <div id="roblox-pill-menu">
+                    <button class="pill-icon-btn" onclick="openEscMenu()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                    <button class="pill-icon-btn" onclick="togglePlayerList()"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></button>
+                    <button class="pill-icon-btn" onclick="toggleGameChat()"><svg viewBox="0 0 24 24" style="stroke:white; fill:none;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+                </div>
+            </div>
+
+            <div class="game-buttons-group">
+                <div id="jump-button" class="game-action-circle-btn">ПРЫЖOK</div>
+            </div>
+
+            <div id="touch-look-zone"></div>
+            <div id="joystick-container"><div id="joystick-stick"></div></div>
+        </div>
+
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpPH0-plTnrGk98g3L_IEYvZpe3avsvfQ",
+            authDomain: "robloxselect.firebaseapp.com",
+            databaseURL: "https://robloxselect-default-rtdb.firebaseio.com",
+            projectId: "robloxselect"
+        };
+        let db = null;
+        try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) {}
+
+        let currentUsername = "";
+        let skinColors = { skin: "#f5d0b1", shirt: "#1c1f26" };
+        let userBio = "Welcome to my Roblox profile! Enjoying the game and collecting candies.";
+        
+        let candyCount = 0;
+        let robuxCount = 100;
+        let currentAccessory = 'cap';
+        let currentFace = 'classic';
+        let currentShirt = 'jacket';
+        let currentPants = 'oakley';
+        let currentAnimation = 'default';
+
+        let ownedFaces = { classic: true, cool: true };
+        let ownedAccessories = { cap: true, pumpkin: false };
+        let ownedShirts = { jacket: true, orange: true };
+        let ownedPants = { oakley: true, classic: true, black: true };
+        let ownedAnimations = { default: true, levitation: false };
+
+        let myUserId = '';
+        let sfxVolume = 1.0;
+        let currentLang = 'ru';
+
+        let cloudAdminsList = ["kot_lgromanchik2610", "robloxrussia"];
+
+        // Переменные системы баффов и квестов
+        let activeBuff = null;
+        let buffTimerEnd = 0;
+        let currentQuest = null; // { name: '...', targetX: 10, targetZ: -25, reward: 20 }
+
+        // Переменные для звуковых уведомлений в ЛС (красная точка)
+        let unreadDMs = {};
+
+        const badWords = ["сука", "блять", "хуй", "пизда", "ебать", "сучка", "блэт", "чмо", "еблан", "пидор", "сук", "хуев", "мразота", "залупа", "бля", "eblan", "сука", "сукк"];
+        function censorText(txt) {
+            if (!txt) return "";
+            let words = txt.split(' ');
+            let filtered = words.map(word => {
+                let cleanWord = word.toLowerCase().replace(/[^a-zа-яё0-9]/g, '');
+                for (let bw of badWords) {
+                    if (cleanWord.includes(bw)) {
+                        return "***";
+                    }
+                }
+                return word;
+            });
+            return filtered.join(' ');
+        }
+
+        function generateRobloxAvatarHeadHTML(skinHex = '#f5d0b1', faceType = 'classic') {
+            let overlayFaceSVG = '';
+            if (faceType === 'cool') {
+                overlayFaceSVG = `
+                    <rect x="26" y="36" width="48" height="15" rx="3" fill="#111827"/>
+                    <line x1="18" y1="40" x2="26" y2="40" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+                    <line x1="74" y1="40" x2="82" y2="40" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M 40 60 Q 50 68 60 60" stroke="#111827" stroke-width="4" stroke-linecap="round" fill="none"/>
+                `;
+            } else {
+                overlayFaceSVG = `
+                    <ellipse cx="37" cy="42" rx="5" ry="9" fill="#111827"/>
+                    <ellipse cx="63" cy="42" rx="5" ry="9" fill="#111827"/>
+                    <path d="M 37 54 Q 50 68 63 54" stroke="#111827" stroke-width="5" stroke-linecap="round" fill="none"/>
+                `;
+            }
+
+            return `
+                <div class="roblox-avatar-head-icon">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="20" y="15" width="60" height="58" rx="14" fill="${skinHex}" stroke="#111827" stroke-width="4"/>
+                        ${overlayFaceSVG}
+                    </svg>
+                </div>
+            `;
+        }
+
+        const translations = {
+            ru: {
+                pageTitle: "Roblox 🎮",
+                adminTitle: "👑 Панель Администратора",
+                adminCandyTitle: "🍬 Управление конфетами",
+                adminCandyBtn: "Выдать конфеты",
+                adminAddTitle: "➕ Управление администраторами",
+                adminAddBtn: "Сделать админом",
+                hModalTitle: "С праздником Хеллоуин!",
+                hModalDesc: "Погрузитесь в мистическую атмосферу этого вечера и активируйте эксклюзивную тему!",
+                hModalBtn: "Получить тему 🎃",
+                errTitle: "Ошибка подключения (Код: 277)",
+                errDesc: "Не удалось подключиться к игровым серверам Roblox.",
+                escPlayers: "Игроки",
+                escSettings: "Настройки",
+                escServerHeading: "На этом сервере",
+                escLeave: "Выйти",
+                escRespawn: "Возродиться",
+                escResume: "Продолжить",
+                respawnText: "Хотите возродиться на точке спавна?",
+                yes: "Да",
+                no: "Нет",
+                leaveText: "Вы действительно хотите выйти из игры в главное меню?",
+                loadingTip: "Подключение к игровому серверу...",
+                friends: "Друзей",
+                followers: "Подписчиков",
+                following: "Подписок",
+                followBtn: "Подписаться",
+                followingBtn: "Вы подписаны ✓",
+                chatDM: "💬 ЛС",
+                wearing: "Currently Wearing",
+                pumpTitle: "Тыквенная голова",
+                free: "Free",
+                friendsTab: "Friends",
+                searchTab: "Search players",
+                filterAll: "All",
+                filterOnline: "Online",
+                authTitle: "Roblox 🎃",
+                authUserLabel: "Никнейм в игре",
+                authUserSub: "3–20 латинских символов",
+                authPassLabel: "Пароль аккаунта",
+                authPassSub: "Латиница и цифры",
+                authBtn: "Войти / Зарегистрироваться",
+                setTitle: "⚙️ Настройки игры",
+                setAcc: "Текущий аккаунт",
+                setRegion: "🌍 Твой Регион (по IP)",
+                setLang: "🌐 Язык / Мова / Language",
+                setTheme: "🎨 Выбор темы оформления",
+                setSfx: "🔊 Звуковые эффекты (SFX)",
+                setClose: "Закрыть настройки",
+                setLogout: "Сменить аккаунт",
+                detVisits: "Посещения",
+                detStatus: "Статус",
+                detAvailable: "Доступно для игры",
+                adminBtnHud: "👑 Админ",
+                homeTitle: "🎮 Рекомендуемые игры",
+                cardTitle: "Собери конфеты у жителей квартала!",
+                cardDesc: "🍬 Интерактивные дома • 99% Рейтинг",
+                shopTitle: "🍬 Магазин Конфет и Зелий",
+                candies: "Конфет",
+                tabShirts: "👕 Shirts",
+                tabPants: "👖 Pants",
+                tabFaces: "Лица",
+                tabAnim: "🏃 Анимации",
+                tabAcc: "🎃 Аксессуары",
+                accEquipped: "Надето",
+                accEquip: "Надеть",
+                accGet: "Забрать / Надеть",
+                navHome: "Главная",
+                navAvatar: "Аватар",
+                hudCandy: "Конфеты",
+                hudNick: "Ник",
+                playersTitle: "Игроки",
+                sysName: "Система:",
+                sysText: "Добро пожаловать в игру!",
+                chatPlaceholder: "Сообщение...",
+                houseOpen: "Кто-то открыл дверь!",
+                houseDesc: "Житель просит о помощи с квестом!",
+                askCandy: "🍬 Просить конфеты",
+                leaveDoor: "Отойти от двери",
+                jump: "ПРЫЖОК"
+            }
+        };
+
+        const countryNamesRu = { "RU": "Россия", "KZ": "Казахстан", "UA": "Украина", "US": "США", "BY": "Беларусь", "DE": "Германия", "GB": "Великобритания", "FR": "Франция", "UZ": "Узбекистан" };
+        const countryFlags = { "RU": "🇷🇺", "KZ": "🇰🇿", "UA": "🇺🇦", "US": "🇺🇸", "BY": "🇧🇾", "DE": "🇩🇪", "GB": "🇬🇧", "FR": "🇫🇷", "UZ": "🇺🇿" };
+
+        let logoClicksCount = 0;
+        let logoClickTimer = null;
+        let currentTheme = 'normal';
+        let halloweenUnlocked = false;
+
+        let allOnlinePlayers = {};
+        let myFriendsList = [];
+        let myFollowingList = [];
+
+        let viewingProfileName = "";
+        let viewingPartnerName = "";
+        let isBioExpanded = false;
+        let currentViewingBioFull = "";
+
+        let selectedPlayerForAction = null;
+        let selectedPlayerSkinForAction = { skin: '#f5d0b1', face: 'classic' };
+
+        function checkIsAdmin() {
+            if (!currentUsername) return false;
+            const clean = currentUsername.trim().toLowerCase();
+            return clean === "robloxrussia" || clean === "kot_lgromanchik2610" || cloudAdminsList.map(a => a.toLowerCase()).includes(clean);
+        }
+
+        function initCloudAdminsListener() {
+            if (!db) return;
+            db.ref('settings/admins').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    cloudAdminsList = data;
+                } else {
+                    db.ref('settings/admins').set(["kot_lgromanchik2610", "robloxrussia"]);
+                }
+                updateAdminPanelUI();
+            });
+        }
+
+        function toggleAdminPanel() {
+            if (!checkIsAdmin()) { alert('Недостаточно прав!'); return; }
+            const p = document.getElementById('admin-panel');
+            const isOpen = (p.style.display === 'flex');
+            p.style.display = isOpen ? 'none' : 'flex';
+            if (!isOpen) updateAdminPanelUI();
+        }
+
+        function updateAdminPanelUI() {
+            const container = document.getElementById('admin-list-container-box');
+            if (!container) return;
+            container.innerHTML = '';
+            cloudAdminsList.forEach(adminName => {
+                const isProtected = (adminName.toLowerCase() === "robloxrussia" || adminName.toLowerCase() === "kot_lgromanchik2610");
+                container.innerHTML += `
+                    <div class="admin-item-row">
+                        <span>👑 ${adminName} ${isProtected ? '(Владелец)' : ''}</span>
+                        ${!isProtected ? `<button class="admin-remove-btn" onclick="removeAdminUser('${adminName}')">Удалить</button>` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        function adminGiveCandy() {
+            const val = parseInt(document.getElementById('admin-candy-input').value);
+            if (!isNaN(val)) {
+                candyCount = Math.max(0, Math.min(250, val));
+                document.getElementById('candy-count').innerText = candyCount;
+                saveGameProgress();
+                alert(`Конфеты обновлены: ${candyCount}`);
+            }
+        }
+
+        function adminIssueWarning() {
+            const target = document.getElementById('admin-warn-username').value.trim();
+            const reason = document.getElementById('admin-warn-reason').value.trim() || "Нарушение правил";
+            if (!target) { alert("Введите ник игрока!"); return; }
+
+            const targetLower = target.toLowerCase();
+            if (targetLower === "robloxrussia" || targetLower === "kot_lgromanchik2610") {
+                alert("⛔ Нельзя выдать предупреждение (Warning) этому аккаунту! Это защищенный главный аккаунт.");
+                return;
+            }
+
+            if (db) {
+                db.ref('punishments/' + targetLower).set({ type: 'warn', reason: reason, time: Date.now() });
+                alert(`Предупреждение отправлено игроку ${target}!`);
+                document.getElementById('admin-warn-username').value = '';
+                document.getElementById('admin-warn-reason').value = '';
+            }
+        }
+
+        function adminIssueBan() {
+            const target = document.getElementById('admin-ban-username').value.trim();
+            const reason = document.getElementById('admin-ban-reason').value.trim() || "Нарушение правил сервера";
+            const daysCount = parseInt(document.getElementById('admin-ban-duration').value);
+            
+            if (!target) { alert("Введите ник игрока!"); return; }
+
+            const targetLower = target.toLowerCase();
+            if (targetLower === "robloxrussia" || targetLower === "kot_lgromanchik2610") {
+                alert("⛔ Нельзя забанить этот аккаунт! Это защищенный главный аккаунт (владелец).");
+                return;
+            }
+            
+            let banExpires = 0;
+            let termText = "навсегда (Permanent)";
+            if (daysCount > 0) {
+                banExpires = Date.now() + (daysCount * 24 * 60 * 60 * 1000);
+                termText = `на ${daysCount} дн.`;
+            }
+
+            if (db) {
+                db.ref('punishments/' + targetLower).set({ 
+                    type: 'ban', 
+                    reason: reason, 
+                    expires: banExpires, 
+                    time: Date.now() 
+                });
+                alert(`Игрок ${target} заблокирован ${termText}!`);
+                document.getElementById('admin-ban-username').value = '';
+                document.getElementById('admin-ban-reason').value = '';
+            }
+        }
+
+        function initPunishmentsListener() {
+            if (!db || !currentUsername) return;
+            db.ref('punishments/' + currentUsername.toLowerCase()).on('value', (snap) => {
+                const p = snap.val();
+                if (p) {
+                    if (p.type === 'warn') {
+                        document.getElementById('global-warning-text').innerText = `Причина: ${p.reason}`;
+                        document.getElementById('global-warning-overlay').style.display = 'flex';
+                    } else if (p.type === 'ban') {
+                        if (p.expires && p.expires > 0 && Date.now() > p.expires) {
+                            db.ref('punishments/' + currentUsername.toLowerCase()).remove();
+                            return;
+                        }
+                        
+                        let expireStr = "Бан выдан навсегда.";
+                        if (p.expires && p.expires > 0) {
+                            const dateObj = new Date(p.expires);
+                            expireStr = `Бан истекает: ${dateObj.toLocaleDateString()} в ${dateObj.toLocaleTimeString()}`;
+                        }
+
+                        document.getElementById('global-ban-text').innerHTML = `Причина: ${p.reason}<br><br><span style="color:#ff9500; font-size:12px;">${expireStr}</span>`;
+                        document.getElementById('global-ban-overlay').style.display = 'flex';
+                    }
+                }
+            });
+        }
+
+        function closeGlobalWarning() {
+            document.getElementById('global-warning-overlay').style.display = 'none';
+            if (db && currentUsername) {
+                db.ref('punishments/' + currentUsername.toLowerCase()).remove();
+            }
+        }
+
+        function logoutAccountFromBan() {
+            document.getElementById('global-ban-overlay').style.display = 'none';
+            logoutAccount();
+        }
+
+        function adminAddAdminUser() {
+            const name = document.getElementById('admin-username-input').value.trim();
+            if (name) {
+                let list = [...cloudAdminsList];
+                if (!list.map(l => l.toLowerCase()).includes(name.toLowerCase())) {
+                    list.push(name);
+                    if (db) {
+                        db.ref('settings/admins').set(list).then(() => {
+                            document.getElementById('admin-username-input').value = '';
+                            alert(`Игрок ${name} успешно назначен администратором!`);
+                        });
+                    }
+                } else { alert('Игрок уже является администратором.'); }
+            }
+        }
+
+        function removeAdminUser(name) {
+            const lower = name.toLowerCase();
+            if (lower === "robloxrussia" || lower === "kot_lgromanchik2610") {
+                alert("Нельзя удалить главного владельца!");
+                return;
+            }
+            let list = cloudAdminsList.filter(a => a.toLowerCase() !== lower);
+            if (db) {
+                db.ref('settings/admins').set(list).then(() => {
+                    alert(`Администратор ${name} удален.`);
+                });
+            }
+        }
+
+        // --- Функция для покупки баффов (зелий) за конфеты ---
+        function buyBuff(buffType, cost) {
+            if (candyCount >= cost) {
+                candyCount -= cost;
+                document.getElementById('menu-candy-display').innerText = `${candyCount} Конфет`;
+                document.getElementById('candy-count').innerText = candyCount;
+                saveGameProgress();
+
+                activeBuff = buffType;
+                buffTimerEnd = Date.now() + 30000; // 30 секунд баффа
+                if (buffType === 'speed') {
+                    speed = 0.22;
+                    alert("⚡ Вы выпили зелье ускорения! Бег увеличен на 30 секунд.");
+                } else if (buffType === 'jump') {
+                    jumpForce = 0.52;
+                    alert("🚀 Вы выпили зелье супер-прыжка! Прыжок увеличен на 30 секунд.");
+                }
+            } else {
+                alert("Недостаточно конфет для покупки зелья!");
+            }
+        }
+
+        // --- Система мониторинга входящих ЛС для звуковых уведомлений (красная точка) ---
+        function initGlobalDMNotifications() {
+            if (!db || !currentUsername) return;
+            // Проверяем все возможные чаты с текущим юзером
+            db.ref('private_chats').on('value', (snapshot) => {
+                const chats = snapshot.val() || {};
+                let hasUnread = false;
+                
+                Object.keys(chats).forEach(channelKey => {
+                    if (channelKey.includes(currentUsername.toLowerCase())) {
+                        const messages = chats[channelKey];
+                        if (messages) {
+                            const msgList = Object.values(messages);
+                            const lastMsg = msgList[msgList.length - 1];
+                            // Если последнее сообщение не от нас, считаем его потенциально непрочитанным
+                            if (lastMsg && lastMsg.sender && lastMsg.sender.toLowerCase() !== currentUsername.toLowerCase()) {
+                                if (viewingPartnerName.toLowerCase() !== lastMsg.sender.toLowerCase()) {
+                                    hasUnread = true;
+                                    unreadDMs[lastMsg.sender.toLowerCase()] = true;
+                                }
+                            }
+                        }
+                    }
+                });
+
+                const dot = document.getElementById('profile-dm-unread-dot');
+                if (dot) {
+                    dot.style.display = hasUnread ? 'block' : 'none';
+                }
+            });
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            ['ru', 'uk', 'en'].forEach(l => {
+                const btn = document.getElementById('lang-btn-' + l);
+                if(btn) btn.className = (l === lang) ? "theme-select-btn active" : "theme-select-btn";
+            });
+            applyTranslations();
+            saveGameProgress();
+        }
+
+        function applyTranslations() {
+            const t = translations[currentLang] || translations.ru;
+            document.getElementById('page-title').innerText = t.pageTitle;
+            document.getElementById('admin-panel-title-text').innerText = t.adminTitle;
+            document.getElementById('admin-candy-title-text').innerText = t.adminCandyTitle;
+            document.getElementById('admin-candy-btn-text').innerText = t.adminCandyBtn;
+            document.getElementById('admin-addadmin-title-text').innerText = t.adminAddTitle;
+            document.getElementById('admin-addadmin-btn-text').innerText = t.adminAddBtn;
+            document.getElementById('H-modal-title').innerText = t.hModalTitle;
+            document.getElementById('H-modal-desc').innerText = t.hModalDesc;
+            document.getElementById('H-modal-btn').innerText = t.hModalBtn;
+            document.getElementById('err-277-title').innerText = t.errTitle;
+            document.getElementById('err-277-desc').innerText = t.errDesc;
+            document.getElementById('esc-tab-players').innerText = t.escPlayers;
+            document.getElementById('esc-tab-settings').innerText = t.escSettings;
+            document.getElementById('esc-server-heading').innerText = t.escServerHeading;
+            document.getElementById('esc-btn-leave').innerText = t.escLeave;
+            document.getElementById('esc-btn-respawn').innerText = t.escRespawn;
+            document.getElementById('esc-btn-resume').innerText = t.escResume;
+            document.getElementById('respawn-confirm-text').innerText = t.respawnText;
+            document.getElementById('respawn-yes-btn').innerText = t.yes;
+            document.getElementById('respawn-no-btn').innerText = t.no;
+            document.getElementById('leave-confirm-text').innerText = t.leaveText;
+            document.getElementById('leave-yes-btn').innerText = t.yes;
+            document.getElementById('leave-no-btn').innerText = t.no;
+            document.getElementById('loading-tip-text').innerText = t.loadingTip;
+            document.getElementById('prof-friends-txt').innerText = t.friends;
+            document.getElementById('prof-followers-txt').innerText = t.followers;
+            document.getElementById('prof-following-txt').innerText = t.following;
+            document.getElementById('prof-wearing-heading').innerText = t.wearing;
+            document.getElementById('friends-tab-title').innerText = t.friendsTab + ` (${myFriendsList.length})`;
+            document.getElementById('search-tab-title').innerText = t.searchTab;
+            document.getElementById('filter-all').innerText = t.filterAll;
+            document.getElementById('filter-online').innerText = t.filterOnline;
+            document.getElementById('auth-logo-text').innerText = t.authTitle;
+            document.getElementById('auth-user-label').innerHTML = `${t.authUserLabel} <span>${t.authUserSub}</span>`;
+            document.getElementById('auth-pass-label').innerHTML = `${t.authPassLabel} <span>${t.authPassSub}</span>`;
+            document.getElementById('auth-submit-btn').innerText = t.authBtn;
+            document.getElementById('set-title').innerText = t.setTitle;
+            document.getElementById('set-acc-label').innerText = t.setAcc;
+            document.getElementById('set-region-label').innerText = t.setRegion;
+            document.getElementById('set-lang-label').innerText = t.setLang;
+            document.getElementById('set-theme-label').innerText = t.setTheme;
+            document.getElementById('set-sfx-label').innerHTML = `${t.setSfx} <span id="sfx-vol-val">${Math.round(sfxVolume*100)}%</span>`;
+            document.getElementById('set-close-btn').innerText = t.setClose;
+            document.getElementById('set-logout-btn').innerText = t.setLogout;
+            document.getElementById('det-visits-label').innerText = t.detVisits;
+            document.getElementById('det-status-label').innerText = t.detStatus;
+            document.getElementById('det-status-val').innerText = t.detAvailable;
+            document.getElementById('menu-admin-btn').innerText = t.adminBtnHud;
+            document.getElementById('home-section-title').innerText = t.homeTitle;
+            document.getElementById('card-game-title').innerText = t.cardTitle;
+            document.getElementById('card-game-desc').innerText = t.cardDesc;
+            document.getElementById('shop-header-title').innerText = t.shopTitle;
+            document.getElementById('menu-candy-display').innerText = `${candyCount} ${t.candies}`;
+            document.getElementById('tab-shirts-title').innerText = t.tabShirts;
+            document.getElementById('tab-pants-title').innerText = t.tabPants;
+            document.getElementById('tab-faces-title').innerText = t.tabFaces;
+            document.getElementById('tab-anim-title').innerText = t.tabAnim;
+            document.getElementById('tab-acc-title').innerText = t.tabAcc;
+            document.getElementById('nav-home-txt').innerText = t.navHome;
+            document.getElementById('nav-friends-txt').innerText = t.friendsTab;
+            document.getElementById('nav-avatar-txt').innerText = t.navAvatar;
+            document.getElementById('hud-candy-label').innerText = t.hudCandy;
+            document.getElementById('hud-nick-label').innerText = t.hudNick;
+            document.getElementById('players-title').innerText = t.playersTitle;
+            document.getElementById('sys-chat-name').innerText = t.sysName;
+            document.getElementById('sys-chat-text').innerText = t.sysText;
+            document.getElementById('chat-input-field').placeholder = t.chatPlaceholder;
+            document.getElementById('jump-button').innerText = t.jump;
+        }
+
+        function handleLogoEasterEgg() {
+            logoClicksCount++;
+            if (logoClickTimer) clearTimeout(logoClickTimer);
+            if (logoClicksCount >= 5) { 
+                logoClicksCount = 0; 
+                halloweenUnlocked = true;
+                saveGameProgress();
+                updateThemeOptionsUI();
+                showEnjoyHalloweenModal(); 
+            } else { 
+                logoClickTimer = setTimeout(() => { logoClicksCount = 0; }, 1000); 
+            }
+        }
+
+        function showEnjoyHalloweenModal() {
+            const modal = document.getElementById('enjoy-halloween-modal');
+            modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 20);
+        }
+        function hideEnjoyHalloweenModal() {
+            const modal = document.getElementById('enjoy-halloween-modal');
+            modal.classList.remove('show'); setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+        function applyHalloweenThemeAndClose() {
+            setAppTheme('halloween'); hideEnjoyHalloweenModal();
+        }
+
+        function updateThemeOptionsUI() {
+            const btnHalloween = document.getElementById('theme-btn-halloween');
+            if (btnHalloween) {
+                btnHalloween.style.display = halloweenUnlocked ? 'block' : 'none';
+            }
+        }
+
+        function setAppTheme(themeName) {
+            if (themeName === 'halloween' && !halloweenUnlocked) return;
+            currentTheme = themeName;
+            const btnNormal = document.getElementById('theme-btn-normal');
+            const btnHalloween = document.getElementById('theme-btn-halloween');
+            if (btnNormal && btnHalloween) {
+                if (themeName === 'halloween') {
+                    btnHalloween.className = "theme-select-btn active"; btnNormal.className = "theme-select-btn";
+                    applyThemeMode(true);
+                } else {
+                    btnNormal.className = "theme-select-btn active"; if(btnHalloween) btnHalloween.className = "theme-select-btn";
+                    applyThemeMode(false);
+                }
+            }
+            saveGameProgress();
+        }
+
+        function applyThemeMode(halloween) {
+            const root = document.documentElement;
+            const hFx = document.getElementById('halloween-bg-fx');
+            const menuSpider = document.getElementById('menu-halloween-spider-wrap');
+            const logoTextElements = document.querySelectorAll('.roblox-exact-logo');
+
+            if (halloween) {
+                root.style.setProperty('--bg-color', '#0b090f'); root.style.setProperty('--card-bg', '#191421');
+                root.style.setProperty('--accent-color', '#ff7b00'); root.style.setProperty('--accent-text', '#ff9500');
+                root.style.setProperty('--play-btn-bg', '#ff7b00');
+                if (hFx) hFx.style.display = 'block'; 
+                if (menuSpider) menuSpider.style.display = 'block';
+                logoTextElements.forEach(el => el.innerText = "Roblox Halloween 🎃");
+            } else {
+                root.style.setProperty('--bg-color', '#0f1115'); root.style.setProperty('--card-bg', '#1f232a');
+                root.style.setProperty('--accent-color', '#0070f3'); root.style.setProperty('--accent-text', '#3b82f6');
+                root.style.setProperty('--play-btn-bg', '#0070f3');
+                if (hFx) hFx.style.display = 'none'; 
+                if (menuSpider) menuSpider.style.display = 'none';
+                logoTextElements.forEach(el => el.innerText = "Roblox");
+            }
+        }
+
+        function saveGameProgress() {
+            if (candyCount > 250) candyCount = 250;
+            const localData = {
+                candyCount, robuxCount, currentAccessory, currentFace, currentShirt, currentPants, currentAnimation,
+                ownedFaces, ownedAccessories, ownedShirts, ownedPants, ownedAnimations,
+                currentTheme, halloweenUnlocked, myFriendsList, myFollowingList, skinColors, currentLang, userBio
+            };
+            if (currentUsername) {
+                localStorage.setItem('roblox_save_' + currentUsername.toLowerCase(), JSON.stringify(localData));
+                if (db) {
+                    db.ref('user_profiles/' + currentUsername.toLowerCase()).update(localData);
+                }
+            }
+        }
+
+        async function detectUserRegion() {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                const code = (data.country_code || 'RU').toUpperCase();
+                const ruName = countryNamesRu[code] || data.country_name || 'Россия';
+                document.getElementById('settings-region-display').innerHTML = `${countryFlags[code]||'🇷🇺'} ${ruName} (${code})`;
+            } catch(e) {
+                document.getElementById('settings-region-display').innerHTML = `🇷🇺 Россия (RU)`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            detectUserRegion();
+            let savedUser = localStorage.getItem('roblox_username');
+            if (!savedUser) {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('roblox_save_')) {
+                        savedUser = key.replace('roblox_save_', '');
+                        break;
+                    }
+                }
+            }
+
+            if (savedUser && savedUser.trim() !== '') {
+                loadUserDataAndSetup(savedUser);
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+            }
+            initCloudAdminsListener();
+            initRealDatabaseListeners();
+        });
+
+        function loadUserDataAndSetup(username) {
+            currentUsername = username;
+            localStorage.setItem('roblox_username', username);
+            myUserId = 'player_' + username.replace(/[^a-zA-Z0-9]/g, '_');
+
+            const localRaw = localStorage.getItem('roblox_save_' + username.toLowerCase());
+            if (localRaw) {
+                try {
+                    const data = JSON.parse(localRaw);
+                    candyCount = data.candyCount || 0;
+                    robuxCount = data.robuxCount !== undefined ? data.robuxCount : 100;
+                    currentAccessory = data.currentAccessory || 'cap';
+                    currentFace = data.currentFace || 'classic';
+                    currentShirt = data.currentShirt || 'jacket';
+                    currentPants = data.currentPants || 'oakley';
+                    currentAnimation = data.currentAnimation || 'default';
+                    ownedFaces = data.ownedFaces || ownedFaces;
+                    ownedAccessories = data.ownedAccessories || ownedAccessories;
+                    ownedShirts = data.ownedShirts || ownedShirts;
+                    ownedPants = data.ownedPants || ownedPants;
+                    ownedAnimations = data.ownedAnimations || ownedAnimations;
+                    currentTheme = data.currentTheme || 'normal';
+                    halloweenUnlocked = data.halloweenUnlocked || false;
+                    myFriendsList = data.myFriendsList || [];
+                    myFollowingList = data.myFollowingList || [];
+                    if (data.skinColors) skinColors = data.skinColors;
+                    if (data.currentLang) currentLang = data.currentLang;
+                    if (data.userBio) userBio = censorText(data.userBio);
+                } catch(e) {}
+            }
+
+            if (db) {
+                db.ref('user_profiles/' + username.toLowerCase()).once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        candyCount = data.candyCount !== undefined ? data.candyCount : candyCount;
+                        robuxCount = data.robuxCount !== undefined ? data.robuxCount : robuxCount;
+                        currentAccessory = data.currentAccessory || currentAccessory;
+                        currentFace = data.currentFace || currentFace;
+                        currentShirt = data.currentShirt || currentShirt;
+                        currentPants = data.currentPants || currentPants;
+                        currentAnimation = data.currentAnimation || currentAnimation;
+                        ownedFaces = data.ownedFaces || ownedFaces;
+                        ownedAccessories = data.ownedAccessories || ownedAccessories;
+                        ownedShirts = data.ownedShirts || ownedShirts;
+                        ownedPants = data.ownedPants || ownedPants;
+                        ownedAnimations = data.ownedAnimations || ownedAnimations;
+                        currentTheme = data.currentTheme || currentTheme;
+                        halloweenUnlocked = data.halloweenUnlocked !== undefined ? data.halloweenUnlocked : halloweenUnlocked;
+                        myFriendsList = data.myFriendsList || myFriendsList;
+                        myFollowingList = data.myFollowingList || myFollowingList;
+                        if (data.skinColors) skinColors = data.skinColors;
+                        if (data.currentLang) currentLang = data.currentLang;
+                        if (data.userBio) userBio = censorText(data.userBio);
+                    }
+                    finalizeUserSession();
+                }, (error) => {
+                    finalizeUserSession();
+                });
+            } else {
+                finalizeUserSession();
+            }
+        }
+
+        function finalizeUserSession() {
+            updateThemeOptionsUI();
+            setAppTheme(halloweenUnlocked ? currentTheme : 'normal');
+            setLanguage(currentLang);
+            document.getElementById('display-username').innerText = currentUsername;
+            document.getElementById('settings-display-username').innerText = currentUsername;
+            document.getElementById('robux-count-val').innerText = robuxCount;
+            
+            const avatarHeadHtml = generateRobloxAvatarHeadHTML(skinColors.skin, currentFace);
+            document.getElementById('user-initial').innerHTML = avatarHeadHtml;
+            document.getElementById('top-profile-avatar-btn').innerHTML = avatarHeadHtml;
+
+            document.getElementById('debug-name-span').innerText = currentUsername;
+            checkVerifiedBadge(currentUsername);
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('menu-screen').style.display = 'flex';
+
+            if (checkIsAdmin()) {
+                document.getElementById('menu-admin-btn').style.display = 'flex';
+            } else {
+                document.getElementById('menu-admin-btn').style.display = 'none';
+            }
+
+            if (db) {
+                const updateStatus = () => {
+                    db.ref('all_registered_users/' + currentUsername.toLowerCase()).update({
+                        name: currentUsername,
+                        skinColor: skinColors.skin,
+                        shirt: currentShirt,
+                        pants: currentPants,
+                        accessory: currentAccessory,
+                        face: currentFace,
+                        animation: currentAnimation,
+                        score: candyCount,
+                        userBio: userBio,
+                        lastSeen: Date.now()
+                    });
+                };
+                updateStatus();
+                if (window.heartbeatInterval) clearInterval(window.heartbeatInterval);
+                window.heartbeatInterval = setInterval(updateStatus, 2000);
+                initPunishmentsListener();
+                initGlobalDMNotifications();
+            }
+        }
+
+        let heartbeatInterval = null;
+        let chatMessagesRef = null;
+        let isChatOpen = false;
+
+        function toggleGameChat() {
+            isChatOpen = !isChatOpen;
+            document.getElementById('chat-box').style.display = isChatOpen ? 'flex' : 'none';
+        }
+
+        function initGameChatListener() {
+            if (!db) return;
+            const chatBox = document.getElementById('chat-messages-box');
+            if (chatMessagesRef) chatMessagesRef.off();
+            chatMessagesRef = db.ref('game_server_chat');
+            chatMessagesRef.limitToLast(30).on('child_added', (snapshot) => {
+                const msg = snapshot.val();
+                if (msg && msg.sender && msg.text) {
+                    const cleanText = censorText(msg.text);
+                    const isVerified = (msg.sender.toLowerCase() === 'robloxrussia');
+                    const verifiedBadgeHTML = isVerified 
+                        ? `<span class="roblox-verified-badge" style="width:15px; height:15px; margin-left:4px;"><svg viewBox="0 0 24 24" style="width:9px; height:9px;"><polyline points="20 6 9 17 4 12"></polyline></svg></span>` 
+                        : '';
+
+                    chatBox.innerHTML += `<div class="chat-line"><span>${msg.sender}${verifiedBadgeHTML}:</span> ${cleanText}</div>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            });
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input-field');
+            const text = input.value.trim();
+            if (!text) return;
+            const cleanText = censorText(text);
+            if (db) {
+                db.ref('game_server_chat').push({ sender: currentUsername, text: cleanText, time: Date.now() });
+            }
+            input.value = '';
+        }
+
+        function initRealDatabaseListeners() {
+            if (!db) return;
+            db.ref('players').on('value', (snapshot) => {
+                allOnlinePlayers = snapshot.val() || {};
+                Object.keys(allOnlinePlayers).forEach(id => {
+                    const p = allOnlinePlayers[id];
+                    if (p && p.name) {
+                        db.ref('all_registered_users/' + p.name.toLowerCase()).update({
+                            name: p.name,
+                            skinColor: p.skinColor || '#f5d0b1',
+                            shirt: p.shirt || 'jacket',
+                            pants: p.pants || 'oakley',
+                            accessory: p.accessory || 'cap',
+                            face: p.face || 'classic',
+                            animation: p.animation || 'default',
+                            score: p.score || 0,
+                            userBio: p.userBio || "Welcome to my Roblox profile!",
+                            lastSeen: Date.now()
+                        });
+                    }
+                });
+            });
+        }
+
+        function updateSFXVolume(val) { sfxVolume = parseFloat(val) / 100; document.getElementById('sfx-vol-val').innerText = val + "%"; }
+        
+        let audioCtx = null;
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        function startBackgroundMusic() { initAudio(); }
+        function playSound(type) {
+            try {
+                if (sfxVolume <= 0) return; initAudio();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+                if (type === 'jump') {
+                    osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(350, now + 0.18);
+                    gain.gain.setValueAtTime(0.2 * sfxVolume, now); gain.gain.linearRampToValueAtTime(0, now + 0.18);
+                    osc.start(now); osc.stop(now + 0.18);
+                } else if (type === 'candy') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(500, now); osc.frequency.exponentialRampToValueAtTime(1000, now + 0.15);
+                    gain.gain.setValueAtTime(0.2 * sfxVolume, now); gain.gain.linearRampToValueAtTime(0, now + 0.15);
+                    osc.start(now); osc.stop(now + 0.15);
+                }
+            } catch(e){}
+        }
+
+        let isEscOpen = false;
+        function openEscMenu() { if (!gameStarted) return; isEscOpen = true; document.getElementById('roblox-esc-menu').style.display = 'flex'; renderEscPlayers(); }
+        function closeEscMenu() { isEscOpen = false; document.getElementById('roblox-esc-menu').style.display = 'none'; closeRespawnConfirm(); closeLeaveConfirm(); }
+        function switchEscTab(tab, btn) {
+            document.querySelectorAll('.esc-tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+            if (tab === 'people') renderEscPlayers();
+        }
+        function renderEscPlayers() {
+            const box = document.getElementById('esc-players-box');
+            box.innerHTML = `<div class="esc-player-row"><div class="esc-player-info">👤 ${currentUsername} (${currentLang==='en'?'You':currentLang==='uk'?'Ви':'Вы'})</div></div>`;
+            Object.keys(allOnlinePlayers).forEach(id => {
+                const p = allOnlinePlayers[id];
+                if (p && id !== myUserId) box.innerHTML += `<div class="esc-player-row"><div class="esc-player-info">👤 ${p.name}</div><button class="esc-join-friend-btn" onclick="joinFriend('${id}')">${currentLang==='en'?'Join':currentLang==='uk'?'Приєднатися':'Присоединиться'}</button></div>`;
+            });
+        }
+        function joinFriend(id) { const p = allOnlinePlayers[id]; if(p) { closeEscMenu(); playerPos.set(p.x+2, p.y, p.z+2); } }
+        function promptRespawn() { document.getElementById('respawn-confirm-frame').style.display = 'flex'; }
+        function closeRespawnConfirm() { document.getElementById('respawn-confirm-frame').style.display = 'none'; }
+        function confirmRespawn() { closeRespawnConfirm(); closeEscMenu(); playerPos.set(0, 1.5, 5); }
+        function promptLeaveGame() { document.getElementById('leave-confirm-frame').style.display = 'flex'; }
+        function closeLeaveConfirm() { document.getElementById('leave-confirm-frame').style.display = 'none'; }
+        function confirmExitGame() { closeLeaveConfirm(); exitToMenu(); }
+        function exitToMenu() {
+            gameStarted = false; closeEscMenu(); if(db) db.ref('players/' + myUserId).remove();
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('menu-screen').style.display = 'flex';
+        }
+
+        function checkVerifiedBadge(username) {
+            const isVerified = (username.trim().toLowerCase() === "robloxrussia");
+            if (isVerified) document.getElementById('verified-badge').style.display = 'inline-flex';
+            else document.getElementById('verified-badge').style.display = 'none';
+        }
+
+        function openPrivateDMForPlayer(partnerName, skinHex = '#f5d0b1', faceType = 'classic') {
+            if (!partnerName || partnerName.toLowerCase() === currentUsername.toLowerCase()) {
+                alert("Нельзя писать сообщения самому себе!");
+                return;
+            }
+            viewingPartnerName = partnerName;
+            
+            // Сбрасываем непрочитанные для этого игрока
+            delete unreadDMs[partnerName.toLowerCase()];
+            const dot = document.getElementById('profile-dm-unread-dot');
+            if (dot) dot.style.display = 'none';
+
+            closePlayerActionModal();
+            document.getElementById('private-dm-modal').style.display = 'flex';
+            document.getElementById('dm-partner-name').innerText = viewingPartnerName;
+            document.getElementById('dm-partner-initial').innerHTML = generateRobloxAvatarHeadHTML(skinHex, faceType);
+            initPrivateDMChatListener();
+        }
+
+        function openPrivateDMFromProfile() {
+            if (!viewingProfileName || viewingProfileName.toLowerCase() === currentUsername.toLowerCase()) return;
+            closeProfileModal();
+            openPrivateDMForPlayer(viewingProfileName, viewingUserSkin.skin, viewingUserSkin.face);
+        }
+
+        function closePrivateDM() { document.getElementById('private-dm-modal').style.display = 'none'; }
+        function getDMChannelKey(userA, userB) { return [userA.toLowerCase(), userB.toLowerCase()].sort().join('_'); }
+        function sendPrivateMessage() {
+            const input = document.getElementById('dm-input-field');
+            const text = input.value.trim();
+            if (!text || !db || !viewingPartnerName) return;
+            const cleanText = censorText(text);
+            const channel = getDMChannelKey(currentUsername, viewingPartnerName);
+            db.ref('private_chats/' + channel).push({ sender: currentUsername, text: cleanText, time: Date.now() });
+            input.value = "";
+        }
+        let dmListenerRef = null;
+        function initPrivateDMChatListener() {
+            if (!db || !viewingPartnerName) return;
+            const channel = getDMChannelKey(currentUsername, viewingPartnerName);
+            const box = document.getElementById('dm-messages-container');
+            box.innerHTML = '';
+            if (dmListenerRef) dmListenerRef.off();
+            dmListenerRef = db.ref('private_chats/' + channel);
+            dmListenerRef.limitToLast(50).on('child_added', (snapshot) => {
+                const msg = snapshot.val();
+                if (msg && msg.sender && msg.text) {
+                    const isMe = (msg.sender.toLowerCase() === currentUsername.toLowerCase());
+                    const cleanText = censorText(msg.text);
+                    const isVerified = (msg.sender.toLowerCase() === 'robloxrussia');
+                    const verifiedBadgeHTML = isVerified 
+                        ? `<span class="roblox-verified-badge" style="width:13px; height:13px; margin-left:4px;"><svg viewBox="0 0 24 24" style="width:8px; height:8px;"><polyline points="20 6 9 17 4 12"></polyline></svg></span>` 
+                        : '';
+
+                    box.innerHTML += `
+                        <div class="dm-bubble ${isMe ? 'outgoing' : 'incoming'}">
+                            <div style="font-size:10px; opacity:0.8; margin-bottom:2px; display:flex; align-items:center;">${msg.sender}${verifiedBadgeHTML}</div>
+                            <div>${cleanText}</div>
+                        </div>
+                    `;
+                    box.scrollTop = box.scrollHeight;
+                }
+            });
+        }
+
+        function openFriendsScreen() {
+            document.getElementById('friends-screen-overlay').style.display = 'flex';
+            document.getElementById('friends-tab-count').innerText = myFriendsList.length;
+            renderRealFriendsList("");
+        }
+        function closeFriendsScreen() { document.getElementById('friends-screen-overlay').style.display = 'none'; }
+        function switchFriendsTab(tab, el) {
+            document.querySelectorAll('.friends-tab-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            currentFriendsTab = tab;
+            renderRealFriendsList(document.getElementById('friends-search-field').value);
+        }
+        function setFriendFilter(filter, el) {
+            document.querySelectorAll('.friend-filter-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            currentFriendFilter = filter;
+            renderRealFriendsList(document.getElementById('friends-search-field').value);
+        }
+        function filterRealPlayers(query) { renderRealFriendsList(query); }
+
+        function renderRealFriendsList(searchQuery) {
+            const container = document.getElementById('friends-list-container-box');
+            container.innerHTML = '';
+            if (!db) { container.innerHTML = `<div style="text-align:center; color:#777; margin-top:30px;">Database not connected</div>`; return; }
+
+            db.ref('all_registered_users').once('value', (snapshot) => {
+                const users = snapshot.val() || {};
+                let userList = Object.values(users);
+
+                if (currentFriendsTab === 'friends') {
+                    userList = userList.filter(u => myFriendsList.includes(u.name));
+                }
+
+                if (searchQuery && searchQuery.trim() !== '') {
+                    const q = searchQuery.toLowerCase().trim();
+                    userList = userList.filter(u => u.name && u.name.toLowerCase().includes(q));
+                }
+
+                if (currentFriendFilter === 'online') {
+                    userList = userList.filter(u => allOnlinePlayers && Object.values(allOnlinePlayers).some(op => op.name === u.name));
+                }
+
+                if (userList.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; color:#777; margin-top:40px; padding: 0 20px;">No players found</div>`;
+                    return;
+                }
+
+                userList.forEach(u => {
+                    const isOnline = Object.values(allOnlinePlayers).some(op => op.name === u.name);
+                    const isMe = (u.name.toLowerCase() === currentUsername.toLowerCase());
+                    const avatarHeadHtml = generateRobloxAvatarHeadHTML(u.skinColor || '#f5d0b1', u.face || 'classic');
+
+                    container.innerHTML += `
+                        <div class="friend-row-card" onclick="openProfileModalForUser('${u.name}', '${u.skinColor || '#f5d0b1'}', '${u.shirt || 'jacket'}', '${u.pants || 'oakley'}', '${u.accessory || 'cap'}', '${u.face || 'classic'}', '${u.animation || 'default'}', ${isOnline})">
+                            <div class="friend-row-left">
+                                <div class="friend-avatar-wrap">
+                                    <div class="friend-avatar-circle">${avatarHeadHtml}</div>
+                                    <div class="friend-status-dot ${isOnline ? '' : 'offline'}"></div>
+                                </div>
+                                <div class="friend-info-col">
+                                    <div class="friend-display-title">
+                                        ${u.name} ${isMe ? `<span style="font-size:10px; background:rgba(255,123,0,0.3); color:#ff9500; padding:1px 6px; border-radius:4px;">${currentLang==='en'?'You':currentLang==='uk'?'Ви':'Вы'}</span>` : ''}
+                                    </div>
+                                    <div class="friend-handle-sub">@${u.name.toLowerCase()}</div>
+                                    <div class="friend-activity-sub">${isOnline ? '🟢 In game' : '⚪ Offline'}</div>
+                                </div>
+                            </div>
+                            <button class="friend-view-profile-btn" onclick="event.stopPropagation(); openProfileModalForUser('${u.name}', '${u.skinColor || '#f5d0b1'}', '${u.shirt || 'jacket'}', '${u.pants || 'oakley'}', '${u.accessory || 'cap'}', '${u.face || 'classic'}', '${u.animation || 'default'}', ${isOnline})">View</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        let viewingUserSkin = { skin: '#f5d0b1', shirt: 'jacket', pants: 'oakley', acc: 'cap', face: 'classic', anim: 'default' };
+        
+        function openProfileModalForUser(name, skin, shirt, pants, acc, face, anim, isOnline) {
+            viewingProfileName = name;
+            viewingUserSkin = { skin: skin || '#f5d0b1', shirt: shirt || 'jacket', pants: pants || 'oakley', acc: acc || 'cap', face: face || 'classic', anim: anim || 'default' };
+            document.getElementById('profile-display-name').innerHTML = name + (name.toLowerCase() === "robloxrussia" ? '<span class="roblox-verified-badge"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' : '');
+            document.getElementById('profile-handle-name').innerText = `@${name.toLowerCase()}`;
+            
+            const avatarCircle = document.getElementById('profile-avatar-initial');
+            avatarCircle.innerHTML = generateRobloxAvatarHeadHTML(skin || '#f5d0b1', face || 'classic');
+
+            const onlineIndicator = document.getElementById('profile-online-indicator');
+            if (onlineIndicator) onlineIndicator.style.background = isOnline ? '#20bf6b' : '#64748b';
+
+            document.getElementById('profile-friends-count').innerText = myFriendsList.length;
+
+            const isMe = (name.toLowerCase() === currentUsername.toLowerCase());
+            const editBox = document.getElementById('profile-edit-box');
+
+            if (isMe) {
+                editBox.style.display = 'flex';
+                document.getElementById('profile-bio-input').value = userBio;
+            } else {
+                editBox.style.display = 'none';
+            }
+
+            if (db) {
+                db.ref('user_profiles/' + name.toLowerCase()).once('value', (snap) => {
+                    const uData = snap.val() || {};
+                    const bioText = uData.userBio || (isMe ? userBio : "Welcome to my Roblox profile!");
+                    setupBioDisplay(bioText);
+                });
+                db.ref('user_social/' + name.toLowerCase()).once('value', (snap) => {
+                    const dat = snap.val() || {};
+                    const followers = dat.followers ? Object.keys(dat.followers).length : 0;
+                    const following = dat.following ? Object.keys(dat.following).length : 0;
+                    document.getElementById('profile-followers-count').innerText = followers;
+                    document.getElementById('profile-following-count').innerText = following;
+                });
+            } else {
+                setupBioDisplay(isMe ? userBio : "Welcome to my Roblox profile!");
+            }
+
+            const wearingGrid = document.getElementById('profile-wearing-grid');
+            if (wearingGrid) {
+                let accIcon = '🧢'; let accTitle = 'Roblox Cap';
+                if (acc === 'pumpkin') { accIcon = '🎃'; accTitle = 'Тыквенная голова'; }
+
+                let shirtTitle = shirt === 'jacket' ? 'ROBLOX Jacket' : 'Orange Classic Shirt';
+                
+                let animIcon = '🏃'; let animTitle = 'Default Animation';
+                if (anim === 'levitation') { animIcon = '💎'; animTitle = 'Levitation & Fly'; }
+
+                wearingGrid.innerHTML = `
+                    <div class="wearing-item-card">
+                        <div class="wearing-item-icon">${accIcon}</div>
+                        <div class="wearing-item-title">${accTitle}</div>
+                        <div class="wearing-item-price" style="color:#4cd137;">Free</div>
+                    </div>
+                    <div class="wearing-item-card">
+                        <div class="wearing-item-icon">🧥</div>
+                        <div class="wearing-item-title">${shirtTitle}</div>
+                        <div class="wearing-item-price" style="color:#4cd137;">Free</div>
+                    </div>
+                    <div class="wearing-item-card" style="grid-column: span 2;">
+                        <div class="wearing-item-icon">${animIcon}</div>
+                        <div class="wearing-item-title">${animTitle}</div>
+                        <div class="wearing-item-price" style="color:#0070f3;">Equipped Animation</div>
+                    </div>
+                `;
+            }
+
+            const btn = document.getElementById('profile-action-btn');
+            if (isMe) { btn.style.display = 'none'; }
+            else {
+                btn.style.display = 'block';
+                const isFollowing = myFollowingList.includes(viewingProfileName);
+                const t = translations[currentLang] || translations.ru;
+                if (isFollowing) { btn.innerText = t.followingBtn; btn.style.background = "#22c55e"; }
+                else { btn.innerText = t.followBtn + " ⭐"; btn.style.background = "var(--accent-color, #0070f3)"; }
+            }
+
+            document.getElementById('profile-modal-overlay').style.display = 'flex';
+            setTimeout(() => {
+                initProfile3D(viewingUserSkin.skin, viewingUserSkin.shirt, viewingUserSkin.pants, viewingUserSkin.acc, viewingUserSkin.face, viewingUserSkin.anim);
+            }, 100);
+        }
+
+        function setupBioDisplay(fullText) {
+            currentViewingBioFull = censorText(fullText);
+            isBioExpanded = false;
+            updateBioTextRender();
+        }
+
+        function updateBioTextRender() {
+            const bioTextEl = document.getElementById('profile-bio-text');
+            const moreBtnEl = document.getElementById('profile-more-btn');
+            if (!bioTextEl) return;
+
+            const maxLength = 95;
+            if (currentViewingBioFull.length <= maxLength) {
+                bioTextEl.innerText = currentViewingBioFull;
+                moreBtnEl.style.display = 'none';
+            } else {
+                moreBtnEl.style.display = 'inline';
+                if (isBioExpanded) {
+                    bioTextEl.innerText = currentViewingBioFull + " ";
+                    moreBtnEl.innerText = 'скрыть';
+                } else {
+                    bioTextEl.innerText = currentViewingBioFull.substring(0, maxLength) + "... ";
+                    moreBtnEl.innerText = "more";
+                }
+            }
+        }
+
+        function toggleBioExpand() {
+            isBioExpanded = !isBioExpanded;
+            updateBioTextRender();
+        }
+
+        function saveMyBio() {
+            const raw = document.getElementById('profile-bio-input').value.trim();
+            userBio = censorText(raw || "Welcome to my Roblox profile!");
+            saveGameProgress();
+            setupBioDisplay(userBio);
+            alert('Описание профиля успешно обновлено!');
+        }
+
+        function toggleFollowProfileUser() {
+            if (!viewingProfileName || viewingProfileName.toLowerCase() === currentUsername.toLowerCase()) return;
+            const target = viewingProfileName;
+            const isFollowing = myFollowingList.includes(target);
+
+            if (isFollowing) {
+                myFollowingList = myFollowingList.filter(f => f !== target);
+                if (db) {
+                    db.ref(`user_social/${target.toLowerCase()}/followers/${currentUsername.toLowerCase()}`).remove();
+                    db.ref(`user_social/${currentUsername.toLowerCase()}/following/${target.toLowerCase()}`).remove();
+                }
+            } else {
+                myFollowingList.push(target);
+                if (db) {
+                    db.ref(`user_social/${target.toLowerCase()}/followers/${currentUsername.toLowerCase()}`).set(true);
+                    db.ref(`user_social/${currentUsername.toLowerCase()}/following/${target.toLowerCase()}`).set(true);
+                }
+            }
+            saveGameProgress();
+            openProfileModalForUser(target, viewingUserSkin.skin, viewingUserSkin.shirt, viewingUserSkin.pants, viewingUserSkin.acc, viewingUserSkin.face, viewingUserSkin.anim, true);
+        }
+
+        function openSocialModal(type) {
+            const modal = document.getElementById('social-list-modal');
+            const titleEl = document.getElementById('social-modal-title');
+            const container = document.getElementById('social-list-container');
+            container.innerHTML = '';
+
+            const targetUser = viewingProfileName || currentUsername;
+            titleEl.innerText = (type === 'friends') ? `Друзья (${targetUser})` : (type === 'followers' ? `Подписчики (${targetUser})` : `Подписки (${targetUser})`);
+            modal.style.display = 'flex';
+
+            if (!db) { container.innerHTML = `<div style="text-align:center; color:#777;">No db</div>`; return; }
+
+            const listRef = (type === 'friends') ? db.ref('user_social/' + targetUser.toLowerCase() + '/friends') : db.ref(`user_social/${targetUser.toLowerCase()}/${type}`);
+            listRef.once('value', (snap) => {
+                const mapData = snap.val() || {};
+                const names = Object.keys(mapData);
+
+                if (names.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; color:#777; margin-top:40px;">Список пуст</div>`;
+                    return;
+                }
+
+                names.forEach(uname => {
+                    db.ref(`all_registered_users/${uname.toLowerCase()}`).once('value', (uSnap) => {
+                        const uData = uSnap.val() || { name: uname, shirt: 'jacket', pants: 'oakley', skinColor: '#f5d0b1', accessory: 'cap', face: 'classic', animation: 'default' };
+                        const isOnline = Object.values(allOnlinePlayers).some(op => op.name.toLowerCase() === uData.name.toLowerCase());
+                        const avatarHeadHtml = generateRobloxAvatarHeadHTML(uData.skinColor || '#f5d0b1', uData.face || 'classic');
+
+                        container.innerHTML += `
+                            <div class="friend-row-card" onclick="openProfileModalForUser('${uData.name}', '${uData.skinColor || '#f5d0b1'}', '${uData.shirt || 'jacket'}', '${uData.pants || 'oakley'}', '${uData.accessory || 'cap'}', '${uData.face || 'classic'}', '${uData.animation || 'default'}', ${isOnline})">
+                                <div class="friend-row-left">
+                                    <div class="friend-avatar-wrap">
+                                        <div class="friend-avatar-circle">${avatarHeadHtml}</div>
+                                        <div class="friend-status-dot ${isOnline ? '' : 'offline'}"></div>
+                                    </div>
+                                    <div class="friend-info-col">
+                                        <div class="friend-display-title">${uData.name}</div>
+                                        <div class="friend-handle-sub">@${uData.name.toLowerCase()}</div>
+                                        <div class="friend-activity-sub">${isOnline ? '🟢 Online' : '⚪ Offline'}</div>
+                                    </div>
+                                </div>
+                                <button class="friend-view-profile-btn" onclick="event.stopPropagation(); openProfileModalForUser('${uData.name}', '${uData.skinColor || '#f5d0b1'}', '${uData.shirt || 'jacket'}', '${uData.pants || 'oakley'}', '${uData.accessory || 'cap'}', '${uData.face || 'classic'}', '${uData.animation || 'default'}', ${isOnline})">View</button>
+                            </div>
+                        `;
+                    });
+                });
+            });
+        }
+
+        function closeSocialListModal() { document.getElementById('social-list-modal').style.display = 'none'; }
+        function openProfileModal(name, colors, isSelf) { openProfileModalForUser(name, skinColors.skin, currentShirt, currentPants, currentAccessory, currentFace, currentAnimation, true); }
+        function closeProfileModal() { document.getElementById('profile-modal-overlay').style.display = 'none'; }
+
+        let profileRenderer, profileScene, profileCamera, profileAvatarGroup;
+        let profileAnimTimer = 0;
+        let profileCurrentAnim = 'default';
+
+        function initProfile3D(skin, shirt, pants, acc, face, anim) {
+            const container = document.getElementById('profile-3d-canvas');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const width = container.clientWidth || container.parentElement.clientWidth || 300;
+            const height = container.clientHeight || container.parentElement.clientHeight || 260;
+
+            profileCurrentAnim = anim || 'default';
+            profileScene = new THREE.Scene(); profileScene.background = new THREE.Color(0x191421);
+            profileCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+            profileCamera.position.set(0, 1.6, 4.2); profileCamera.lookAt(0, 1.4, 0);
+            
+            try {
+                profileRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                profileRenderer.setSize(width, height);
+                profileRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                container.appendChild(profileRenderer.domElement);
+            } catch (e) { console.error(e); }
+
+            profileScene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            profileAvatarGroup = createRobloxCharacterModel(skin, shirt, pants, acc, face);
+            profileScene.add(profileAvatarGroup);
+            animateProfile();
+        }
+
+        function animateProfile() {
+            if (profileRenderer && document.getElementById('profile-modal-overlay').style.display === 'flex') {
+                requestAnimationFrame(animateProfile);
+                profileAnimTimer += 0.05;
+                if (profileAvatarGroup) {
+                    profileAvatarGroup.rotation.y += 0.005;
+                    if (profileAvatarGroup.userData) {
+                        const { lArm, rArm, lLeg, rLeg } = profileAvatarGroup.userData;
+                        if (profileCurrentAnim === 'levitation') {
+                            lArm.rotation.z = Math.PI / 6; rArm.rotation.z = -Math.PI / 6;
+                            profileAvatarGroup.position.y = Math.sin(profileAnimTimer * 2) * 0.15 + 0.1;
+                        } else {
+                            lLeg.rotation.x = Math.sin(profileAnimTimer) * 0.3; rLeg.rotation.x = -Math.sin(profileAnimTimer) * 0.3;
+                            lArm.rotation.x = -Math.sin(profileAnimTimer) * 0.3; rArm.rotation.x = Math.sin(profileAnimTimer) * 0.3;
+                        }
+                    }
+                }
+                profileRenderer.render(profileScene, profileCamera);
+            }
+        }
+
+        function changeSkinColor(hexColor) {
+            skinColors.skin = hexColor;
+            saveGameProgress();
+            const avatarHeadHtml = generateRobloxAvatarHeadHTML(skinColors.skin, currentFace);
+            document.getElementById('user-initial').innerHTML = avatarHeadHtml;
+            document.getElementById('top-profile-avatar-btn').innerHTML = avatarHeadHtml;
+            if(previewRenderer) initPreview3D();
+        }
+
+        function switchAvatarSubTab(subTabName, tabEl) {
+            document.querySelectorAll('.avatar-cat-tab').forEach(t => t.classList.remove('active'));
+            tabEl.classList.add('active');
+            document.getElementById('subtab-shirts').style.display = subTabName === 'shirts' ? 'flex' : 'none';
+            document.getElementById('subtab-pants').style.display = subTabName === 'pants' ? 'flex' : 'none';
+            document.getElementById('subtab-faces').style.display = subTabName === 'faces' ? 'flex' : 'none';
+            document.getElementById('subtab-anim').style.display = subTabName === 'anim' ? 'flex' : 'none';
+            document.getElementById('subtab-acc').style.display = subTabName === 'acc' ? 'flex' : 'none';
+            document.getElementById('subtab-buffs').style.display = subTabName === 'buffs' ? 'flex' : 'none';
+        }
+
+        function equipShirt(shirtId) {
+            ownedShirts[shirtId] = true; currentShirt = shirtId; saveGameProgress(); updateShirtsUI();
+            if(previewRenderer) initPreview3D();
+        }
+
+        function updateShirtsUI() {
+            const t = translations[currentLang] || translations.ru;
+            ['jacket', 'orange'].forEach(id => {
+                const btn = document.getElementById('shirt-btn-' + id);
+                if (!btn) return;
+                if (currentShirt === id) { btn.innerText = t.accEquipped; btn.className = "acc-btn owned"; }
+                else { btn.innerText = t.accEquip; btn.className = "acc-btn"; }
+            });
+        }
+
+        function equipPants(pantsId) {
+            ownedPants[pantsId] = true; currentPants = pantsId; saveGameProgress(); updatePantsUI();
+            if(previewRenderer) initPreview3D();
+        }
+
+        function updatePantsUI() {
+            const t = translations[currentLang] || translations.ru;
+            ['oakley', 'classic', 'black'].forEach(id => {
+                const btn = document.getElementById('pants-btn-' + id);
+                if (!btn) return;
+                if (currentPants === id) { btn.innerText = t.accEquipped; btn.className = "acc-btn owned"; }
+                else { btn.innerText = t.accEquip; btn.className = "acc-btn"; }
+            });
+        }
+
+        function equipFace(faceId) {
+            ownedFaces[faceId] = true; currentFace = faceId; saveGameProgress(); updateFacesUI();
+            const avatarHeadHtml = generateRobloxAvatarHeadHTML(skinColors.skin, currentFace);
+            document.getElementById('user-initial').innerHTML = avatarHeadHtml;
+            document.getElementById('top-profile-avatar-btn').innerHTML = avatarHeadHtml;
+            if(previewRenderer) initPreview3D();
+        }
+
+        function updateFacesUI() {
+            const t = translations[currentLang] || translations.ru;
+            ['classic', 'cool'].forEach(id => {
+                const btn = document.getElementById('face-btn-' + id);
+                if (!btn) return;
+                if (currentFace === id) { btn.innerText = t.accEquipped; btn.className = "acc-btn owned"; }
+                else { btn.innerText = t.accEquip; btn.className = "acc-btn"; }
+            });
+        }
+
+        function equipAnimation(animId) {
+            ownedAnimations[animId] = true; currentAnimation = animId; saveGameProgress(); updateAnimationsUI();
+            if(previewRenderer) initPreview3D();
+        }
+
+        function buyOrEquipAnimation(animId, price) {
+            if (ownedAnimations[animId]) { equipAnimation(animId); }
+            else {
+                if (robuxCount >= price) {
+                    robuxCount -= price; ownedAnimations[animId] = true;
+                    document.getElementById('robux-count-val').innerText = robuxCount;
+                    saveGameProgress(); equipAnimation(animId);
+                    alert(`Поздравляем! Вы успешно купили анимацию!`);
+                } else { alert("Недостаточно Robux!"); }
+            }
+        }
+
+        function updateAnimationsUI() {
+            const t = translations[currentLang] || translations.ru;
+            ['default', 'levitation'].forEach(id => {
+                const btn = document.getElementById('anim-btn-' + id);
+                if (!btn) return;
+                if (currentAnimation === id) { btn.innerText = t.accEquipped; btn.className = "acc-btn owned"; }
+                else if (ownedAnimations[id]) { btn.innerText = t.accEquip; btn.className = "acc-btn"; }
+                else { btn.innerText = "Купить"; btn.className = "acc-btn"; }
+            });
+        }
+
+        function equipAccessory(id) {
+            ownedAccessories[id] = true; currentAccessory = id; saveGameProgress(); updateAccessoriesUI();
+            if(previewRenderer) initPreview3D();
+        }
+
+        function updateAccessoriesUI() {
+            const t = translations[currentLang] || translations.ru;
+            ['cap', 'pumpkin'].forEach(id => {
+                const btn = document.getElementById('acc-btn-' + id);
+                if (!btn) return;
+                if (currentAccessory === id) { btn.innerText = t.accEquipped; btn.className = "acc-btn owned"; }
+                else { btn.innerText = t.accEquip; btn.className = "acc-btn"; }
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.menu-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+            const t = translations[currentLang] || translations.ru;
+            if (tabName === 'home') {
+                document.getElementById('tab-home').classList.add('active');
+                document.getElementById('nav-home-btn').classList.add('active');
+            } else if (tabName === 'avatar') {
+                document.getElementById('tab-avatar').classList.add('active');
+                document.getElementById('nav-avatar-btn').classList.add('active');
+                document.getElementById('menu-candy-display').innerText = `${candyCount} ${t.candies}`;
+                updateAccessoriesUI(); updateFacesUI(); updateShirtsUI(); updatePantsUI(); updateAnimationsUI();
+                setTimeout(() => { if (!previewRenderer) initPreview3D(); }, 50);
+            }
+        }
+
+        function handleRegisterOrLogin() {
+            const usernameInput = document.getElementById('reg-username');
+            const passwordInput = document.getElementById('reg-password');
+            const errorMsg = document.getElementById('auth-error-msg');
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (username.length < 3 || username.length > 20) { errorMsg.innerText = "Nickname must be 3-20 characters!"; return; }
+            if (password.length < 4) { errorMsg.innerText = "Password must be at least 4 characters!"; return; }
+            
+            errorMsg.innerText = "";
+            localStorage.setItem('roblox_username', username);
+
+            const fakeAuthEmail = username.toLowerCase() + "@robloxhalloween.app";
+            if (firebase.auth) {
+                firebase.auth().signInWithEmailAndPassword(fakeAuthEmail, password)
+                    .then(() => { loadUserDataAndSetup(username); })
+                    .catch(() => {
+                        firebase.auth().createUserWithEmailAndPassword(fakeAuthEmail, password)
+                            .then(() => { loadUserDataAndSetup(username); })
+                            .catch((err) => { errorMsg.innerText = "Auth error: " + err.message; });
+                    });
+            } else { loadUserDataAndSetup(username); }
+        }
+
+        function openSettings() { document.getElementById('settings-frame').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settings-frame').style.display = 'none'; }
+        
+        function logoutAccount() { 
+            if(firebase.auth) firebase.auth().signOut().catch(() => {});
+            localStorage.removeItem('roblox_username');
+            
+            closeSettings();
+            closeEscMenu();
+            closeProfileModal();
+            closeFriendsScreen();
+            document.getElementById('menu-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('global-ban-overlay').style.display = 'none';
+            
+            document.getElementById('reg-username').value = '';
+            document.getElementById('reg-password').value = '';
+            document.getElementById('auth-error-msg').innerText = '';
+            
+            document.getElementById('auth-screen').style.display = 'flex';
+        }
+
+        function openGameDetails(gameTitle) {
+            document.getElementById('details-game-title').innerText = gameTitle || "Roblox Game 🎮";
+            document.getElementById('game-details-screen').style.display = 'flex';
+        }
+        function closeGameDetails() { document.getElementById('game-details-screen').style.display = 'none'; }
+        function showConnectionError277() { document.getElementById('error-277-overlay').style.display = 'flex'; }
+        function closeError277Modal() { document.getElementById('error-277-overlay').style.display = 'none'; }
+
+        let gameStarted = false;
+        function startLoadingAndEnterGame() {
+            if (!navigator.onLine) { closeGameDetails(); showConnectionError277(); return; }
+            closeGameDetails();
+            const loadScreen = document.getElementById('loading-screen');
+            const fill = document.getElementById('loading-bar-fill');
+            loadScreen.style.display = 'flex';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 25; fill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadScreen.style.display = 'none';
+                        document.getElementById('menu-screen').style.display = 'none';
+                        const gameScr = document.getElementById('game-screen');
+                        gameScr.style.display = 'block';
+
+                        document.getElementById('candy-count').innerText = candyCount;
+
+                        if (db) {
+                            db.ref('players/' + myUserId).remove();
+                            db.ref('players/' + myUserId).onDisconnect().remove();
+                        }
+                        initGame3D(); initJoystickControls(); initGameChatListener();
+                        gameStarted = true;
+                    }, 400);
+                }
+            }, 100);
+        }
+
+        let playerListVisible = false;
+        function togglePlayerList(forceState) {
+            playerListVisible = (forceState !== undefined) ? forceState : !playerListVisible;
+            document.getElementById('player-list-ui').style.display = playerListVisible ? 'flex' : 'none';
+            if (playerListVisible) updatePlayerListUI();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Tab' && gameStarted && !isEscOpen) {
+                e.preventDefault();
+                togglePlayerList();
+            } else if (e.code === 'Escape' && gameStarted) {
+                e.preventDefault(); if (isEscOpen) closeEscMenu(); else openEscMenu();
+            } else if (e.code === 'Space' && gameStarted && document.activeElement.tagName !== 'INPUT' && !isEscOpen) {
+                triggerJump();
+            } else if (document.activeElement.tagName !== 'INPUT' && !isEscOpen) {
+                keys[e.code] = true;
+            }
+        });
+        window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+        function updatePlayerListUI() {
+            const rowsBox = document.getElementById('player-rows-box');
+            const youStr = 'Вы';
+            rowsBox.innerHTML = `
+                <div class="player-row-item" onclick="onPlayerRowClick('${currentUsername}', '${skinColors.skin}', '${currentFace}')">
+                    <span class="player-row-name">⭐ ${currentUsername} (${youStr})</span> 
+                    <span class="player-row-score">🍬 ${candyCount}</span>
+                </div>
+            `;
+            Object.keys(allOnlinePlayers).forEach(id => {
+                const p = allOnlinePlayers[id];
+                if (p && id !== myUserId) {
+                    rowsBox.innerHTML += `
+                        <div class="player-row-item" onclick="onPlayerRowClick('${p.name}', '${p.skinColor || '#f5d0b1'}', '${p.face || 'classic'}')">
+                            <span class="player-row-name">👤 ${p.name}</span> 
+                            <span class="player-row-score">🍬 ${p.score || 0}</span>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function onPlayerRowClick(playerName, skinHex, faceType) {
+            selectedPlayerForAction = playerName;
+            selectedPlayerSkinForAction = { skin: skinHex, face: faceType };
+            
+            document.getElementById('pac-modal-name').innerText = playerName;
+            document.getElementById('pac-modal-handle').innerText = `@${playerName.toLowerCase()}`;
+            document.getElementById('pac-avatar-icon').innerHTML = generateRobloxAvatarHeadHTML(skinHex, faceType);
+
+            const isAlreadyFriend = myFriendsList.includes(playerName);
+            document.getElementById('pac-addfriend-text').innerText = isAlreadyFriend ? "В друзьях ✓" : "Add Friend";
+
+            document.getElementById('player-action-modal').style.display = 'flex';
+        }
+
+        function closePlayerActionModal() {
+            document.getElementById('player-action-modal').style.display = 'none';
+        }
+
+        function pacActionAddFriend() {
+            if (!selectedPlayerForAction || selectedPlayerForAction.toLowerCase() === currentUsername.toLowerCase()) return;
+            const target = selectedPlayerForAction;
+            
+            if (!myFriendsList.includes(target)) {
+                myFriendsList.push(target);
+                if (db) {
+                    db.ref(`user_social/${currentUsername.toLowerCase()}/friends/${target.toLowerCase()}`).set(true);
+                    db.ref(`user_social/${target.toLowerCase()}/friends/${currentUsername.toLowerCase()}`).set(true);
+                }
+                saveGameProgress();
+                alert(`Игрок ${target} добавлен в друзья!`);
+            } else {
+                alert(`Вы уже друзья с игроком ${target}!`);
+            }
+            closePlayerActionModal();
+        }
+
+        function pacActionInspect() {
+            const target = selectedPlayerForAction;
+            closePlayerActionModal();
+            togglePlayerList(false);
+            openProfileModalForUser(target, selectedPlayerSkinForAction.skin, 'jacket', 'oakley', 'cap', selectedPlayerSkinForAction.face, 'default', true);
+        }
+
+        function pacActionDirectMessage() {
+            const target = selectedPlayerForAction;
+            closePlayerActionModal();
+            togglePlayerList(false);
+            openPrivateDMForPlayer(target, selectedPlayerSkinForAction.skin, selectedPlayerSkinForAction.face);
+        }
+
+        function pacActionBlock() {
+            const target = selectedPlayerForAction;
+            alert(`Игрок ${target} заблокирован.`);
+            closePlayerActionModal();
+        }
+
+        function createRobloxCharacterModel(skinHex, shirtId, pantsId, accId, faceType) {
+            const group = new THREE.Group();
+            const skinMat = new THREE.MeshStandardMaterial({ color: skinHex });
+            
+            let shirtColorHex = (shirtId === 'jacket') ? 0x1c1f26 : 0xff7b00;
+            let pantsColorHex = (pantsId === 'classic') ? 0x2a3b5c : (pantsId === 'black' ? 0x0f1115 : 0x1b2838);
+
+            let shirtMat;
+            if (shirtId === 'jacket') {
+                const jacketCanvas = document.createElement('canvas');
+                jacketCanvas.width = 256; jacketCanvas.height = 256;
+                const jCtx = jacketCanvas.getContext('2d');
+                jCtx.fillStyle = '#1c1f26'; jCtx.fillRect(0, 0, 256, 256);
+                jCtx.strokeStyle = '#0d0e11'; jCtx.lineWidth = 4;
+                jCtx.beginPath(); jCtx.moveTo(128, 0); jCtx.lineTo(128, 256); jCtx.stroke();
+                jCtx.fillStyle = '#ffffff'; jCtx.font = '900 22px Impact, sans-serif'; jCtx.textAlign = 'left';
+                jCtx.fillText('ROBLOX', 142, 85);
+                const jacketTexture = new THREE.CanvasTexture(jacketCanvas);
+                shirtMat = new THREE.MeshStandardMaterial({ map: jacketTexture });
+            } else {
+                shirtMat = new THREE.MeshStandardMaterial({ color: shirtColorHex });
+            }
+
+            const pantsMat = new THREE.MeshStandardMaterial({ color: pantsColorHex });
+            const torsoMatArray = (shirtId === 'jacket') ? [
+                new THREE.MeshStandardMaterial({ color: 0x1c1f26 }), new THREE.MeshStandardMaterial({ color: 0x1c1f26 }),
+                new THREE.MeshStandardMaterial({ color: 0x1c1f26 }), new THREE.MeshStandardMaterial({ color: 0x1c1f26 }),
+                shirtMat, new THREE.MeshStandardMaterial({ color: 0x1c1f26 })
+            ] : shirtMat;
+
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.2, 0.5), torsoMatArray); 
+            torso.position.y = 1.4; group.add(torso);
+            
+            const faceCanvas = document.createElement('canvas');
+            faceCanvas.width = 128; faceCanvas.height = 128;
+            const fCtx = faceCanvas.getContext('2d');
+            fCtx.fillStyle = skinHex; fCtx.fillRect(0, 0, 128, 128);
+            
+            if (faceType === 'cool') {
+                fCtx.fillStyle = '#111827'; fCtx.fillRect(26, 36, 48, 15);
+                fCtx.strokeStyle = '#111827'; fCtx.lineWidth = 4; fCtx.lineCap = 'round';
+                fCtx.beginPath(); fCtx.moveTo(18, 40); fCtx.lineTo(26, 40); fCtx.moveTo(74, 40); fCtx.lineTo(82, 40); fCtx.stroke();
+                fCtx.beginPath(); fCtx.arc(50, 62, 10, 0.1 * Math.PI, 0.9 * Math.PI, false); fCtx.stroke();
+            } else {
+                fCtx.fillStyle = '#111827';
+                fCtx.beginPath(); fCtx.arc(37, 42, 5, 0, Math.PI * 2); fCtx.arc(63, 42, 5, 0, Math.PI * 2); fCtx.fill();
+                fCtx.strokeStyle = '#111827'; fCtx.lineWidth = 5; fCtx.lineCap = 'round';
+                fCtx.beginPath(); fCtx.arc(50, 50, 13, 0.1 * Math.PI, 0.9 * Math.PI, false); fCtx.stroke();
+            }
+
+            const faceTexture = new THREE.CanvasTexture(faceCanvas);
+            const headMaterials = [skinMat, skinMat, skinMat, skinMat, new THREE.MeshStandardMaterial({ map: faceTexture }), skinMat];
+
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), headMaterials); 
+            head.position.y = 2.35; group.add(head);
+            
+            const armMat = (shirtId === 'jacket') ? new THREE.MeshStandardMaterial({ color: 0x1c1f26 }) : shirtMat;
+            const lArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.1, 0.45), armMat); lArm.position.set(-0.7, 1.4, 0); group.add(lArm);
+            const rArm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.1, 0.45), armMat); rArm.position.set(0.7, 1.4, 0); group.add(rArm);
+            const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.44, 1.1, 0.44), pantsMat); lLeg.position.set(-0.27, 0.25, 0); group.add(lLeg);
+            const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.44, 1.1, 0.44), pantsMat); rLeg.position.set(0.27, 0.25, 0); group.add(rLeg);
+
+            group.userData = { lArm, rArm, lLeg, rLeg, torso, head };
+
+            if (accId) {
+                const accGroup = new THREE.Group();
+                if (accId === 'cap') {
+                    const capCanvas = document.createElement('canvas');
+                    capCanvas.width = 256; capCanvas.height = 128;
+                    const cCtx = capCanvas.getContext('2d');
+                    cCtx.fillStyle = '#1c1f26'; cCtx.fillRect(0, 0, 256, 128);
+                    cCtx.fillStyle = '#ffffff'; cCtx.font = 'bold 32px Impact, sans-serif'; cCtx.textAlign = 'center';
+                    cCtx.fillText('ROBLOX', 128, 55);
+                    const capTexture = new THREE.CanvasTexture(capCanvas);
+
+                    const capDome = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.38, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+                        new THREE.MeshStandardMaterial({ color: 0x1c1f26, roughness: 0.7 })
+                    );
+                    const frontMat = [skinMat, skinMat, skinMat, skinMat, new THREE.MeshStandardMaterial({ map: capTexture }), skinMat];
+                    const capFront = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.18, 0.32), frontMat);
+                    capFront.position.set(0, -0.02, -0.20);
+                    const capVisor = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.03, 0.4), new THREE.MeshStandardMaterial({ color: 0x111318, roughness: 0.5 }));
+                    capVisor.position.set(0, -0.08, -0.38);
+
+                    accGroup.add(capDome, capFront, capVisor);
+                    accGroup.position.set(0, 0.38, 0);
+                } else if (accId === 'pumpkin') {
+                    const geom = new THREE.BoxGeometry(0.85, 0.85, 0.85); 
+                    const mat = new THREE.MeshStandardMaterial({ color: 0xff7b00 });
+                    const mesh = new THREE.Mesh(geom, mat); mesh.position.set(0, 0.35, 0);
+                    accGroup.add(mesh);
+                }
+                head.add(accGroup);
+            }
+            return group;
+        }
+
+        let previewScene, previewCamera, previewRenderer, previewAvatarGroup;
+        let previewAnimTimer = 0;
+
+        function initPreview3D() {
+            const container = document.getElementById('avatar-3d-canvas');
+            if (!container) return;
+            container.innerHTML = '';
+            previewScene = new THREE.Scene(); previewScene.background = new THREE.Color(0x191421);
+            previewCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+            previewCamera.position.set(0, 2.3, 4.8); previewCamera.lookAt(0, 1.5, 0);
+            previewRenderer = new THREE.WebGLRenderer({ antialias: true });
+            previewRenderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(previewRenderer.domElement);
+            previewScene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            previewAvatarGroup = createRobloxCharacterModel(skinColors.skin, currentShirt, currentPants, currentAccessory, currentFace);
+            previewScene.add(previewAvatarGroup);
+            animatePreview();
+        }
+        function animatePreview() {
+            requestAnimationFrame(animatePreview);
+            if (previewRenderer && document.getElementById('tab-avatar').classList.contains('active')) {
+                previewAnimTimer += 0.05;
+                if (previewAvatarGroup) {
+                    previewAvatarGroup.rotation.y += 0.01;
+                    if (previewAvatarGroup.userData) {
+                        const { lArm, rArm, lLeg, rLeg } = previewAvatarGroup.userData;
+                        if (currentAnimation === 'levitation') {
+                            lArm.rotation.z = Math.PI / 6; rArm.rotation.z = -Math.PI / 6;
+                            previewAvatarGroup.position.y = Math.sin(previewAnimTimer * 2) * 0.15 + 0.1;
+                        } else {
+                            lLeg.rotation.x = Math.sin(previewAnimTimer) * 0.3; rLeg.rotation.x = -Math.sin(previewAnimTimer) * 0.3;
+                            lArm.rotation.x = -Math.sin(previewAnimTimer) * 0.3; rArm.rotation.x = Math.sin(previewAnimTimer) * 0.3;
+                        }
+                    }
+                }
+                previewRenderer.render(previewScene, previewCamera);
+            }
+        }
+
+        let scene, camera, renderer, playerGroup;
+        let playerPos = new THREE.Vector3(0, 0, 5);
+        let playerYVelocity = 0, isJumping = false;
+        const gravity = 0.015;
+        let jumpForce = 0.35;
+        let cameraAngleY = 0, cameraAngleX = 0.4, cameraDistance = 7;
+        let speed = 0.12;
+        const moveInput = { x: 0, z: 0 }; const keys = {};
+        const otherPlayers = {}, playerLastSeen = {};
+        const colliders = [], houses = [];
+        let activeHouse = null, guiOpened = false;
+        const residentNames = ["Боб", "Кэтлин", "Джек", "Смит", "Оливия", "Гарри"];
+
+        function initGame3D() {
+            const container = document.getElementById('game-container'); container.innerHTML = '';
+            colliders.length = 0; houses.length = 0; guiOpened = false;
+
+            scene = new THREE.Scene(); scene.background = new THREE.Color(0x0d0b14);
+            scene.fog = new THREE.FogExp2(0x0d0b14, 0.018);
+            camera = new THREE.PerspectiveCamera(65, container.clientWidth / container.clientHeight, 0.5, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+
+            scene.add(new THREE.AmbientLight(0x403060, 1.2));
+            const dirLight = new THREE.DirectionalLight(0xff7b00, 0.8);
+            dirLight.position.set(20, 40, 20); scene.add(dirLight);
+
+            playerGroup = createRobloxCharacterModel(skinColors.skin, currentShirt, currentPants, currentAccessory, currentFace);
+            scene.add(playerGroup);
+
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshStandardMaterial({ color: 0x181522, roughness: 0.9 }));
+            floor.rotation.x = -Math.PI / 2; scene.add(floor); colliders.push(floor);
+
+            const houseColors = [0x2a1a38, 0x381a1a, 0x1a3825, 0x38311a, 0x221a38];
+            const roofColors = [0xff7b00, 0xb30000, 0x4682b4, 0x800080, 0x2e8b57];
+            const positions = [{x: 0, z: -20}, {x: -16, z: -20}, {x: 16, z: -20}, {x: 0, z: -35}, {x: -16, z: -35}, {x: 16, z: -35}];
+
+            positions.forEach((pos, idx) => {
+                const houseGroup = new THREE.Group();
+                houseGroup.position.set(pos.x, 0, pos.z);
+                const walls = new THREE.Mesh(new THREE.BoxGeometry(8, 6, 8), new THREE.MeshStandardMaterial({ color: houseColors[idx % houseColors.length] }));
+                walls.position.y = 3; houseGroup.add(walls); colliders.push(walls);
+
+                const roof = new THREE.Mesh(new THREE.ConeGeometry(6, 4, 4), new THREE.MeshStandardMaterial({ color: roofColors[idx % roofColors.length] }));
+                roof.position.y = 8; roof.rotation.y = Math.PI / 4; houseGroup.add(roof);
+
+                const doorPivot = new THREE.Group();
+                doorPivot.position.set(-1.0, 0, 4.05);
+                const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(2, 3.5, 0.2), new THREE.MeshStandardMaterial({ color: 0x5c2c16 }));
+                doorMesh.position.set(1.0, 1.75, 0); doorPivot.add(doorMesh);
+                houseGroup.add(doorPivot);
+
+                const resident = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.5, 0.6), new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff }));
+                resident.position.set(0, 1.2, 3.8); resident.visible = false;
+                houseGroup.add(resident);
+
+                scene.add(houseGroup);
+                houses.push({ pos: new THREE.Vector3(pos.x, 0, pos.z), door: doorPivot, resident, residentName: residentNames[idx % residentNames.length] });
+            });
+
+            if (db) {
+                db.ref('players').on('value', (snapshot) => {
+                    const playersData = snapshot.val() || {};
+                    const currentTime = Date.now();
+                    Object.keys(otherPlayers).forEach(id => {
+                        if (!playersData[id] || (currentTime - (playerLastSeen[id] || 0) > 4000)) {
+                            if (otherPlayers[id]) { scene.remove(otherPlayers[id]); delete otherPlayers[id]; }
+                        }
+                    });
+                    Object.keys(playersData).forEach(id => {
+                        if (id === myUserId) return;
+                        const pData = playersData[id]; if (!pData) return;
+                        playerLastSeen[id] = currentTime;
+                        if (!otherPlayers[id]) {
+                            const fg = createRobloxCharacterModel(pData.skinColor || '#f5d0b1', pData.shirt || 'jacket', pData.pants || 'oakley', pData.accessory || 'cap', pData.face || 'classic');
+                            scene.add(fg); otherPlayers[id] = fg;
+                        }
+                        otherPlayers[id].position.set(pData.x, pData.y, pData.z);
+                        otherPlayers[id].rotation.y = pData.yaw || 0;
+                    });
+                });
+            }
+            animate();
+        }
+
+        function initJoystickControls() {
+            const joystickContainer = document.getElementById('joystick-container');
+            const joystickStick = document.getElementById('joystick-stick');
+            const lookZone = document.getElementById('touch-look-zone');
+            let joyTouchId = null, joyCenter = { x: 0, y: 0 };
+
+            joystickContainer.addEventListener('touchstart', (e) => {
+                const touch = e.changedTouches[0]; joyTouchId = touch.identifier;
+                const rect = joystickContainer.getBoundingClientRect();
+                joyCenter.x = rect.left + rect.width / 2; joyCenter.y = rect.top + rect.height / 2;
+                e.stopPropagation();
+            });
+            joystickContainer.addEventListener('touchmove', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const touch = e.changedTouches[i];
+                    if (touch.identifier === joyTouchId) {
+                        let dx = touch.clientX - joyCenter.x, dy = touch.clientY - joyCenter.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist > 40) { dx = (dx / dist) * 40; dy = (dy / dist) * 40; }
+                        joystickStick.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+                        moveInput.x = dx / 40; moveInput.z = dy / 40;
+                    }
+                }
+                e.stopPropagation();
+            });
+            const endJoy = (e) => { joyTouchId = null; joystickStick.style.transform = `translate(-50%, -50%)`; moveInput.x = 0; moveInput.z = 0; };
+            joystickContainer.addEventListener('touchend', endJoy);
+
+            let lookTouchId = null, lastX = 0, lastY = 0;
+            let isMouseDown = false;
+
+            lookZone.addEventListener('touchstart', (e) => {
+                const t = e.changedTouches[0];
+                if (t.clientX < 180 && t.clientY > window.innerHeight - 180) return;
+                if (t.clientX > window.innerWidth - 130 && t.clientY > window.innerHeight - 130) return;
+                lookTouchId = t.identifier; lastX = t.clientX; lastY = t.clientY;
+            });
+            lookZone.addEventListener('touchmove', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const t = e.changedTouches[i];
+                    if (t.identifier === lookTouchId) {
+                        const deltaX = t.clientX - lastX, deltaY = t.clientY - lastY;
+                        cameraAngleY -= deltaX * 0.008;
+                        cameraAngleX = Math.max(0.1, Math.min(1.4, cameraAngleX - deltaY * 0.008));
+                        lastX = t.clientX; lastY = t.clientY;
+                    }
+                }
+            });
+            lookZone.addEventListener('touchend', (e) => {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    if (e.changedTouches[i].identifier === lookTouchId) lookTouchId = null;
+                }
+            });
+            lookZone.addEventListener('mousedown', (e) => { isMouseDown = true; lastX = e.clientX; lastY = e.clientY; });
+            window.addEventListener('mousemove', (e) => {
+                if (!isMouseDown) return;
+                const deltaX = e.clientX - lastX, deltaY = e.clientY - lastY;
+                cameraAngleY -= deltaX * 0.008;
+                cameraAngleX = Math.max(0.1, Math.min(1.4, cameraAngleX - deltaY * 0.008));
+                lastX = e.clientX; lastY = e.clientY;
+            });
+            window.addEventListener('mouseup', () => { isMouseDown = false; });
+            window.addEventListener('wheel', (e) => {
+                if (!gameStarted) return;
+                cameraDistance = Math.max(3, Math.min(15, cameraDistance + e.deltaY * 0.005));
+            });
+        }
+
+        let lastFirebaseSync = 0;
+        let animTimer = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (!gameStarted) return;
+
+            // Проверка истечения времени баффов
+            if (activeBuff && Date.now() > buffTimerEnd) {
+                if (activeBuff === 'speed') speed = 0.12;
+                if (activeBuff === 'jump') jumpForce = 0.35;
+                activeBuff = null;
+                document.getElementById('active-buff-timer').style.display = 'none';
+            } else if (activeBuff) {
+                const timeLeft = Math.ceil((buffTimerEnd - Date.now()) / 1000);
+                const timerEl = document.getElementById('active-buff-timer');
+                timerEl.style.display = 'block';
+                timerEl.innerText = `⏳ Бафф (${activeBuff}): ${timeLeft}с`;
+            }
+
+            let cx = moveInput.x, cz = moveInput.z;
+            if (keys['KeyW']) cz -= 1; if (keys['KeyS']) cz += 1;
+            if (keys['KeyA']) cx -= 1; if (keys['KeyD']) cx += 1;
+
+            let isMoving = (cx !== 0 || cz !== 0);
+            if (isMoving) {
+                const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+                const side = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+                const dir = new THREE.Vector3().addScaledVector(forward, -cz).addScaledVector(side, cx).normalize();
+                playerPos.addScaledVector(dir, speed);
+                playerGroup.rotation.y = Math.atan2(dir.x, dir.z);
+            }
+
+            playerYVelocity -= gravity; playerPos.y += playerYVelocity;
+            if (playerPos.y <= 0) { playerPos.y = 0; playerYVelocity = 0; isJumping = false; }
+            
+            if (currentAnimation === 'levitation' && playerPos.y === 0) {
+                playerGroup.position.y = playerPos.y + Math.sin(Date.now() * 0.004) * 0.2 + 0.2;
+                playerGroup.position.x = playerPos.x;
+                playerGroup.position.z = playerPos.z;
+            } else {
+                playerGroup.position.copy(playerPos);
+            }
+
+            if (playerGroup.userData && playerGroup.userData.lLeg) {
+                const { lLeg, rLeg, lArm, rArm } = playerGroup.userData;
+                if (currentAnimation === 'levitation') {
+                    lArm.rotation.z = Math.PI / 6; rArm.rotation.z = -Math.PI / 6;
+                    lLeg.rotation.x = 0.2; rLeg.rotation.x = -0.1;
+                } else {
+                    if (isJumping || playerPos.y > 0) {
+                        lArm.rotation.x = -Math.PI / 3; rArm.rotation.x = -Math.PI / 3;
+                        lLeg.rotation.x = 0.2; rLeg.rotation.x = -0.2;
+                    } else if (isMoving) {
+                        animTimer += 0.15;
+                        lLeg.rotation.x = Math.sin(animTimer) * 0.8; rLeg.rotation.x = -Math.sin(animTimer) * 0.8;
+                        lArm.rotation.x = -Math.sin(animTimer) * 0.7; rArm.rotation.x = Math.sin(animTimer) * 0.7;
+                    } else {
+                        animTimer = 0;
+                        lLeg.rotation.x = THREE.MathUtils.lerp(lLeg.rotation.x, 0, 0.2);
+                        rLeg.rotation.x = THREE.MathUtils.lerp(rLeg.rotation.x, 0, 0.2);
+                        lArm.rotation.x = THREE.MathUtils.lerp(lArm.rotation.x, 0, 0.2);
+                        rArm.rotation.x = THREE.MathUtils.lerp(rArm.rotation.x, 0, 0.2);
+                    }
+                }
+            }
+
+            checkHalloweenHouses();
+            checkQuestCompletion();
+
+            const now = Date.now();
+            if (db && now - lastFirebaseSync > 40) {
+                db.ref('players/' + myUserId).set({
+                    x: playerPos.x, y: playerPos.y, z: playerPos.z,
+                    yaw: playerGroup.rotation.y, name: currentUsername, score: candyCount,
+                    skinColor: skinColors.skin, shirt: currentShirt, pants: currentPants, accessory: currentAccessory, face: currentFace, animation: currentAnimation, userBio: userBio
+                });
+                lastFirebaseSync = now;
+            }
+
+            const targetLookAt = new THREE.Vector3(playerPos.x, playerPos.y + 1.2, playerPos.z);
+            const camHeight = cameraDistance * Math.sin(cameraAngleX);
+            const camDistInPlane = cameraDistance * Math.cos(cameraAngleX);
+            camera.position.set(
+                playerPos.x + Math.sin(cameraAngleY) * camDistInPlane,
+                playerPos.y + camHeight,
+                playerPos.z + Math.cos(cameraAngleY) * camDistInPlane
+            );
+            camera.lookAt(targetLookAt);
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Логика Квестов от Жителей ---
+        function checkHalloweenHouses() {
+            if (guiOpened) return;
+            for (let house of houses) {
+                if (playerPos.distanceTo(house.pos) < 6.5) {
+                    activeHouse = house; guiOpened = true;
+                    house.door.rotation.y = -Math.PI / 2;
+                    house.resident.visible = true;
+                    
+                    const t = translations[currentLang] || translations.ru;
+                    document.getElementById('gui-house-title').innerText = `👻 ${t.houseOpen} (${house.residentName})`;
+                    document.getElementById('gui-house-desc').innerText = currentQuest ? "Выполняйте текущий квест!" : "Житель просит вас найти потерянную тыкву на координатах севера!";
+                    
+                    // Показываем кнопку квеста если квест еще не взят
+                    const qBtn = document.getElementById('gui-quest-btn');
+                    qBtn.style.display = currentQuest ? 'none' : 'block';
+
+                    document.getElementById('halloween-gui').style.display = 'flex';
+                    break;
+                }
+            }
+        }
+
+        function acceptQuestFromNPC() {
+            currentQuest = {
+                name: "Потерянная тыква",
+                targetX: 16,
+                targetZ: -35,
+                reward: 25
+            };
+            alert("📜 Квест принят! Найдите потерянную тыкву у дальнего дома (координаты X: 16, Z: -35) и подойдите к ней.");
+            closeHalloweenGui();
+        }
+
+        function checkQuestCompletion() {
+            if (currentQuest) {
+                const targetVec = new THREE.Vector3(currentQuest.targetX, 0, currentQuest.targetZ);
+                if (playerPos.distanceTo(targetVec) < 4) {
+                    playSound('candy');
+                    candyCount += currentQuest.reward;
+                    if (candyCount > 250) candyCount = 250;
+                    document.getElementById('candy-count').innerText = candyCount;
+                    saveGameProgress();
+                    alert(`🎉 Квест выполнен! Вы получили +${currentQuest.reward} конфет!`);
+                    currentQuest = null;
+                }
+            }
+        }
+
+        function chooseTrickOrTreat() {
+            playSound('candy');
+            let earned = Math.floor(Math.random() * 8) + 3;
+            candyCount += earned;
+            if (candyCount > 250) candyCount = 250;
+            document.getElementById('candy-count').innerText = candyCount;
+            saveGameProgress();
+            closeHalloweenGui();
+        }
+
+        function closeHalloweenGui() {
+            if (activeHouse) { activeHouse.door.rotation.y = 0; activeHouse.resident.visible = false; activeHouse = null; }
+            document.getElementById('halloween-gui').style.display = 'none';
+            setTimeout(() => { guiOpened = false; }, 2000);
+        }
+
+        function triggerJump() { if (!isJumping) { isJumping = true; playerYVelocity = jumpForce; playSound('jump'); } }
+        document.getElementById('jump-button').addEventListener('touchstart', (e) => { e.preventDefault(); triggerJump(); });
+    </script>
+</body>
+</html>
